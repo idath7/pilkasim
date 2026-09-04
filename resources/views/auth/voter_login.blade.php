@@ -76,8 +76,8 @@
     }
     
     .otp-container {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         gap: 0.75rem;
         margin-bottom: 2rem;
     }
@@ -184,7 +184,7 @@
             font-size: 1.5rem;
         }
         .otp-container {
-            gap: 0.25rem;
+            gap: 0.5rem;
         }
         .otp-input {
             font-size: 1.5rem;
@@ -242,6 +242,9 @@
                     <input type="text" class="otp-input" maxlength="1" autocomplete="off">
                     <input type="text" class="otp-input" maxlength="1" autocomplete="off">
                     <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
                     <input type="text" class="otp-input" maxlength="1" autocomplete="off">
                     <input type="text" class="otp-input" maxlength="1" autocomplete="off">
                 </div>
@@ -266,8 +269,27 @@
         const form = document.getElementById('loginForm');
 
         inputs.forEach((input, index) => {
+            // Strict sequential typing: prevent focusing on an input if previous ones are empty
+            input.addEventListener('focus', (e) => {
+                let firstEmptyIndex = -1;
+                for (let i = 0; i < inputs.length; i++) {
+                    if (inputs[i].value === '') {
+                        firstEmptyIndex = i;
+                        break;
+                    }
+                }
+                
+                // Redirect focus if trying to skip
+                if (firstEmptyIndex !== -1 && index > firstEmptyIndex) {
+                    inputs[firstEmptyIndex].focus();
+                }
+            });
+
             // Move to next input on typing
             input.addEventListener('input', (e) => {
+                // Ensure only uppercase
+                e.target.value = e.target.value.toUpperCase();
+                
                 if (e.target.value.length === 1) {
                     if (index < inputs.length - 1) {
                         inputs[index + 1].focus();
@@ -317,12 +339,12 @@
         if (form) {
             form.addEventListener('submit', function(e) {
                 updateHiddenInput();
-                if (hiddenInput.value.length < 6) {
+                if (hiddenInput.value.length < 8) {
                     e.preventDefault();
                     Swal.fire({
                         icon: 'error',
                         title: 'Kode Tidak Lengkap',
-                        text: 'Silakan masukkan 6 digit kode akses Anda.'
+                        text: 'Silakan masukkan 8 digit kode akses Anda.'
                     });
                 }
             });
