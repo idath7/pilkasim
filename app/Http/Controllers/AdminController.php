@@ -65,14 +65,36 @@ class AdminController extends Controller
     public function resetVoterStatus($id)
     {
         $voter = Voter::findOrFail($id);
-        $voter->update(['has_voted' => false]);
-        return back()->with('success', 'Status pemilihan siswa berhasil direset.');
+        
+        // Decrement candidate vote if they had voted
+        if ($voter->has_voted && $voter->voted_candidate_id) {
+            $candidate = Candidate::find($voter->voted_candidate_id);
+            if ($candidate && $candidate->votes > 0) {
+                $candidate->decrement('votes');
+            }
+        }
+        
+        $voter->update([
+            'has_voted' => false,
+            'voted_candidate_id' => null
+        ]);
+        
+        return back()->with('success', 'Status pemilihan siswa berhasil direset (Suara kandidat otomatis dikurangi).');
     }
 
     public function resetAllVoters()
     {
         Voter::truncate();
-        return back()->with('success', 'Seluruh data pemilih berhasil dihapus.');
+        Candidate::query()->update(['votes' => 0]);
+        return back()->with('success', 'Seluruh data pemilih dihapus dan semua hasil perolehan suara di-reset ke 0.');
+    }
+
+    public function resetVotes()
+    {
+        Candidate::query()->update(['votes' => 0]);
+        Voter::query()->update(['has_voted' => false, 'voted_candidate_id' => null]);
+        
+        return back()->with('success', 'Hasil perolehan suara dan status pemilihan siswa berhasil dikosongkan (kembali ke 0).');
     }
 
     public function importVoters(Request $request)

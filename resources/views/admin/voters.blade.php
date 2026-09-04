@@ -66,9 +66,13 @@
     <div style="display: flex; gap: 0.5rem; align-items: center;">
         <button onclick="document.getElementById('addModal').style.display='block'" class="btn"><i class="fa-solid fa-plus"></i> Tambah</button>
         <button onclick="document.getElementById('importModal').style.display='block'" class="btn" style="background-color: var(--secondary);"><i class="fa-solid fa-file-excel"></i> Import</button>
-        <form action="{{ route('admin.voters.reset_all') }}" method="POST" onsubmit="return confirm('Peringatan: Seluruh data pemilih akan dihapus! Anda yakin?');" style="display:inline;">
+        <form action="{{ route('admin.voters.reset_votes') }}" method="POST" onsubmit="return confirm('Hasil perolehan suara akan dikosongkan dan status memilih siswa akan direset. Anda yakin?');" style="display:inline;">
             @csrf
-            <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Reset Data</button>
+            <button type="submit" class="btn btn-danger" style="background-color: #f59e0b;"><i class="fa-solid fa-rotate-left"></i> Reset Suara</button>
+        </form>
+        <form action="{{ route('admin.voters.reset_all') }}" method="POST" onsubmit="return confirm('Peringatan: Seluruh data pemilih akan dihapus dari database! Anda yakin?');" style="display:inline;">
+            @csrf
+            <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Hapus Semua</button>
         </form>
         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
     </div>

@@ -44,6 +44,7 @@ class VotingController extends Controller
         
         // Mark voter as has_voted
         $voter->has_voted = true;
+        $voter->voted_candidate_id = $candidate->id;
         $voter->save();
 
         // Otomatis logout dan sesi berakhir

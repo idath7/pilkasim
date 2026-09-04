@@ -15,5 +15,6 @@ class Voter extends Model
         'username',
         'password',
         'has_voted',
+        'voted_candidate_id',
     ];
 }

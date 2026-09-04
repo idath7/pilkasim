@@ -90,6 +90,7 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('/admin/voters', [AdminController::class, 'storeVoter'])->name('admin.voters.store');
     Route::post('/admin/voters/{id}/reset', [AdminController::class, 'resetVoterStatus'])->name('admin.voters.reset');
     Route::post('/admin/voters/reset-all', [AdminController::class, 'resetAllVoters'])->name('admin.voters.reset_all');
+    Route::post('/admin/voters/reset-votes', [AdminController::class, 'resetVotes'])->name('admin.voters.reset_votes');
     Route::post('/admin/voters/import', [AdminController::class, 'importVoters'])->name('admin.voters.import');
     Route::get('/admin/voters/template', [AdminController::class, 'downloadVoterTemplate'])->name('admin.voters.template');
     
