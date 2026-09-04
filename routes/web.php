@@ -37,12 +37,15 @@ Route::get('/scanner', function () {
 })->name('scanner');
 
 Route::get('/api/kiosk-token', function() {
+    $setting = \App\Models\Setting::first();
+    $duration = $setting->token_duration ?? 30;
     $token = \Illuminate\Support\Str::random(12);
     \Illuminate\Support\Facades\Cache::put('kiosk_token_' . $token, 'pending', now()->addMinutes(60));
     
     return response()->json([
         'token' => $token,
-        'url' => route('voting.index', ['token' => $token])
+        'url' => route('voting.index', ['token' => $token]),
+        'remaining' => (int) $duration
     ]);
 })->name('kiosk.token');
 
