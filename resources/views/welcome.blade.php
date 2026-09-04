@@ -218,7 +218,7 @@
                 <h1 class="login-title">Login Hak Pilih</h1>
                 <h2 class="school-name">Pemilihan Ketua OSIM<br>{{ $appSetting->school_name ?? 'Nama Sekolah Belum Diatur' }}</h2>
                 
-                <a href="{{ route('scanner') }}" class="btn-primary">
+                <a href="{{ route('voter.login') }}" class="btn-primary">
                     Mulai Memilih <i class="fa-solid fa-qrcode"></i>
                 </a>
             </div>
@@ -227,5 +227,34 @@
         
     </div>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        @if(session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: '{{ session("success") }}'
+            });
+        @endif
+
+        @if(session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: '{{ session("error") }}'
+            });
+        @endif
+    </script>
 </body>
 </html>

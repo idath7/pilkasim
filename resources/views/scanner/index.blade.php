@@ -223,14 +223,14 @@
             function onScanSuccess(decodedText, decodedResult) {
                 if (scanDelay) return;
                 
-                // Cek apakah URL valid dan mengandung /login?token=
-                if (decodedText.includes('/login?token=')) {
+                // Cek apakah URL valid dan mengandung /voting?token=
+                if (decodedText.includes('/voting?token=')) {
                     scanDelay = true;
                     html5QrCode.stop().then(() => {
                         document.getElementById('message').style.display = 'block';
                         document.getElementById('message').style.background = '#dcfce7';
                         document.getElementById('message').style.color = '#166534';
-                        document.getElementById('message').innerText = 'Berhasil! Mengalihkan...';
+                        document.getElementById('message').innerText = 'Berhasil! Mengalihkan ke bilik suara...';
                         
                         setTimeout(() => {
                             window.location.href = decodedText;

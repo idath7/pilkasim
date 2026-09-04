@@ -99,12 +99,22 @@
         
         <!-- Pengaturan Keamanan -->
         <div class="form-section">
-            <div class="form-section-title"><i class="fa-solid fa-shield-halved"></i> Pengaturan Keamanan (Kiosk)</div>
+            <div class="form-section-title"><i class="fa-solid fa-shield-halved"></i> Pengaturan Keamanan & Login</div>
             
-            <div class="form-group">
-                <label>Durasi Token Kiosk (Detik)</label>
-                <input type="number" name="token_duration" value="{{ $setting->token_duration ?? 30 }}" min="5" max="3600" placeholder="Contoh: 30">
-                <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Berapa lama QR Code / Token Kiosk akan bertahan sebelum berganti secara otomatis. Default: 30 detik.</small>
+            <div class="color-picker-grid">
+                <div class="form-group">
+                    <label>Metode Login Pemilih</label>
+                    <select name="login_method" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+                        <option value="access_code" {{ ($setting->login_method ?? 'access_code') == 'access_code' ? 'selected' : '' }}>Kode Akses Saja</option>
+                        <option value="username_password" {{ ($setting->login_method ?? 'access_code') == 'username_password' ? 'selected' : '' }}>Username dan Password</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Durasi Token Kiosk (Detik)</label>
+                    <input type="number" name="token_duration" value="{{ $setting->token_duration ?? 30 }}" min="5" max="3600" placeholder="Contoh: 30">
+                    <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Berapa lama QR Code / Token Kiosk akan bertahan sebelum berganti secara otomatis. Default: 30 detik.</small>
+                </div>
             </div>
         </div>
 

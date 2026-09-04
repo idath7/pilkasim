@@ -11,13 +11,15 @@ Route::get('/', function () {
 });
 
 // Voter Auth
-Route::get('/login', [AuthController::class, 'showVoterLogin'])->name('voter.login')->middleware('check.user.agent');
+Route::get('/login', [AuthController::class, 'showVoterLogin'])->name('voter.login');
 Route::post('/login', [AuthController::class, 'voterLogin']);
 Route::post('/logout', [AuthController::class, 'voterLogout'])->name('voter.logout');
 
 // Voting
-Route::get('/voting', [VotingController::class, 'index'])->name('voting.index');
-Route::post('/voting/{id}', [VotingController::class, 'vote'])->name('voting.vote');
+Route::middleware('check.user.agent')->group(function () {
+    Route::get('/voting', [VotingController::class, 'index'])->name('voting.index');
+    Route::post('/voting/{id}', [VotingController::class, 'vote'])->name('voting.vote');
+});
 
 // Admin Auth
 Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
@@ -35,18 +37,23 @@ Route::get('/scanner', function () {
 })->name('scanner');
 
 Route::get('/api/kiosk-token', function() {
-    $duration = \App\Models\Setting::first()->token_duration ?? 30;
-    $timeWindow = floor(time() / $duration);
-    $appKey = env('APP_KEY', 'default_key');
-    $token = substr(md5($appKey . $timeWindow), 0, 8);
-    $remaining = $duration - (time() % $duration);
+    $token = \Illuminate\Support\Str::random(12);
+    \Illuminate\Support\Facades\Cache::put('kiosk_token_' . $token, 'pending', now()->addMinutes(60));
+    
     return response()->json([
         'token' => $token,
-        'url' => route('voter.login', ['token' => $token]),
-        'remaining' => $remaining,
-        'duration' => $duration
+        'url' => route('voting.index', ['token' => $token])
     ]);
 })->name('kiosk.token');
+
+Route::get('/api/kiosk-status', function(\Illuminate\Http\Request $request) {
+    $token = $request->query('token');
+    $status = $token ? \Illuminate\Support\Facades\Cache::get('kiosk_token_' . $token) : null;
+    
+    return response()->json([
+        'status' => $status ?? 'invalid'
+    ]);
+})->name('kiosk.status');
 
 // Admin Dashboard
 Route::middleware('auth:admin')->group(function () {

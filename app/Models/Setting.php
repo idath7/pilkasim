@@ -20,5 +20,6 @@ class Setting extends Model
         'theme_color_6',
         'use_gradient',
         'token_duration',
+        'login_method',
     ];
 }

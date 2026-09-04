@@ -38,16 +38,25 @@ class AdminController extends Controller
             'name' => 'required|string',
             'class_name' => 'required|string',
             'gender' => 'required|string|in:L,P',
+            'username' => 'nullable|string|unique:voters,username',
+            'password' => 'nullable|string|min:4',
         ]);
 
-        Voter::create([
+        $voterData = [
             'nis' => $request->nis,
             'name' => $request->name,
             'class_name' => $request->class_name,
             'gender' => $request->gender,
             'access_code' => strtoupper(Str::random(6)),
             'has_voted' => false,
-        ]);
+        ];
+
+        if ($request->filled('username') && $request->filled('password')) {
+            $voterData['username'] = $request->username;
+            $voterData['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        Voter::create($voterData);
 
         return back()->with('success', 'Pemilih berhasil ditambahkan.');
     }
@@ -198,6 +207,7 @@ class AdminController extends Controller
             'theme_color_6' => 'nullable|string|max:20',
             'use_gradient' => 'nullable|boolean',
             'token_duration' => 'nullable|integer|min:5|max:3600',
+            'login_method' => 'nullable|string|in:access_code,username_password',
             'osim_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'school_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',

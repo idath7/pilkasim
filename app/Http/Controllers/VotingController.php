@@ -46,6 +46,9 @@ class VotingController extends Controller
         $voter->has_voted = true;
         $voter->save();
 
-        return redirect()->route('voting.index')->with('success', 'Terima kasih! Suara Anda telah berhasil dicatat.');
+        // Otomatis logout dan sesi berakhir
+        session()->forget(['voter_id', 'has_valid_dynamic_token']);
+
+        return redirect('/')->with('success', 'Terima kasih, ' . $voter->name . '! Suara Anda telah berhasil dicatat.');
     }
 }

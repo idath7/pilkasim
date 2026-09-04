@@ -83,6 +83,7 @@
                 <th>Nama Lengkap</th>
                 <th>Kelas</th>
                 <th>L/P</th>
+                <th>Username</th>
                 <th>Kode Akses</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -96,6 +97,7 @@
                 <td style="font-weight: 500;">{{ $voter->name }}</td>
                 <td>{{ $voter->class_name }}</td>
                 <td>{{ $voter->gender }}</td>
+                <td>{{ $voter->username ?? '-' }}</td>
                 <td>
                     <span class="access-code-box">{{ $voter->access_code }}</span>
                 </td>
@@ -135,7 +137,16 @@
                     <option value="P">Perempuan (P)</option>
                 </select>
             </div>
-            <button type="submit" class="btn" style="width: 100%;">Simpan Data</button>
+            <div style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1rem;">Opsi Akun (Untuk Login Username & Password)</div>
+            <div class="form-group">
+                <label>Username (Opsional)</label>
+                <input type="text" name="username" placeholder="Kosongkan jika tidak dipakai">
+            </div>
+            <div class="form-group">
+                <label>Password (Opsional)</label>
+                <input type="text" name="password" placeholder="Kosongkan jika tidak dipakai">
+            </div>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Simpan Data</button>
         </form>
     </div>
 </div>

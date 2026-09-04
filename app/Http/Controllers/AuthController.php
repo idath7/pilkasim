@@ -11,29 +11,55 @@ class AuthController extends Controller
     // Voter Auth
     public function showVoterLogin()
     {
+        if (session()->has('voter_id')) {
+            return redirect()->route('scanner');
+        }
+        
         return view('auth.voter_login');
     }
 
     public function voterLogin(Request $request)
     {
-        $request->validate([
-            'access_code' => 'required|string',
-        ]);
+        $setting = \App\Models\Setting::first();
+        $loginMethod = $setting->login_method ?? 'access_code';
 
-        $voter = Voter::where('access_code', strtoupper($request->access_code))->first();
+        $voter = null;
+
+        if ($loginMethod === 'username_password') {
+            $request->validate([
+                'username' => 'required|string',
+                'password' => 'required|string',
+            ]);
+
+            $voter = Voter::where('username', $request->username)->first();
+            
+            if (!$voter || !\Illuminate\Support\Facades\Hash::check($request->password, $voter->password)) {
+                return back()->with('error', 'Username atau Password salah.');
+            }
+        } else {
+            $request->validate([
+                'access_code' => 'required|string',
+            ]);
+
+            $voter = Voter::where('access_code', strtoupper($request->access_code))->first();
+            
+            if (!$voter) {
+                return back()->with('error', 'Kode Akses tidak ditemukan.');
+            }
+        }
 
         if ($voter) {
             if ($voter->has_voted) {
                 return back()
-                    ->with('error', 'Maaf, Anda sudah pernah memberikan suara pemilihan dengan kode ini.')
+                    ->with('error', 'Maaf, Anda sudah pernah memberikan suara pemilihan dengan akun ini.')
                     ->with('timer', 10000);
             }
             
             session(['voter_id' => $voter->id]);
-            return redirect()->route('voting.index')->with('success', 'Berhasil login! Silakan pilih kandidat Anda.');
+            return redirect()->route('scanner')->with('success', 'Berhasil login! Silakan scan QR Code di Kiosk.');
         }
 
-        return back()->with('error', 'Kode Akses tidak ditemukan.');
+        return back()->with('error', 'Terjadi kesalahan saat login.');
     }
 
     public function voterLogout()

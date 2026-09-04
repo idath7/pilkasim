@@ -260,7 +260,8 @@
 
     <script>
         let qrCodeObj = null;
-        let countdownInterval = null;
+        let pollInterval = null;
+        let currentToken = null;
 
         function renderQR(url) {
             if (qrCodeObj) {
@@ -279,11 +280,14 @@
         }
 
         function fetchToken() {
+            clearInterval(pollInterval);
             fetch('{{ route("kiosk.token") }}')
                 .then(res => res.json())
                 .then(data => {
+                    currentToken = data.token;
                     renderQR(data.url);
-                    startTimer(data.remaining);
+                    document.getElementById('timer').innerText = 'Menunggu Scan...';
+                    startPolling();
                 })
                 .catch(err => {
                     console.error('Error fetching token:', err);
@@ -292,21 +296,19 @@
                 });
         }
 
-        function startTimer(seconds) {
-            clearInterval(countdownInterval);
-            let remaining = seconds;
-            document.getElementById('timer').innerText = `Berganti dalam ${remaining} detik`;
-            
-            countdownInterval = setInterval(() => {
-                remaining--;
-                if (remaining <= 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById('timer').innerText = 'Memperbarui QR...';
-                    fetchToken();
-                } else {
-                    document.getElementById('timer').innerText = `Berganti dalam ${remaining} detik`;
-                }
-            }, 1000);
+        function startPolling() {
+            pollInterval = setInterval(() => {
+                if (!currentToken) return;
+                fetch(`{{ route("kiosk.status") }}?token=${currentToken}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'used') {
+                            document.getElementById('timer').innerText = 'Memperbarui QR...';
+                            fetchToken();
+                        }
+                    })
+                    .catch(err => console.error('Error checking status:', err));
+            }, 2000);
         }
 
         document.addEventListener("DOMContentLoaded", function() {

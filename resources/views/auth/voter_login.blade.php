@@ -142,6 +142,38 @@
     .hidden-input {
         display: none;
     }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        background-color: #f9fafb;
+        color: #111827;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
+        box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1);
+    }
     
     /* Responsive Adjustments for Mobile */
     @media (max-width: 480px) {
@@ -174,30 +206,54 @@
         </a>
         
         <i class="fa-solid fa-check-to-slot login-icon"></i>
-        <h1 class="login-title">Verifikasi Kode</h1>
-        <p class="login-subtitle">Masukkan kode verifikasi unik yang diberikan oleh panitia pemilihan.</p>
-        
-        <form action="{{ route('voter.login') }}" method="POST" id="loginForm">
-            @csrf
+
+        @php
+            $loginMethod = $appSetting->login_method ?? 'access_code';
+        @endphp
+
+        @if($loginMethod === 'username_password')
+            <h1 class="login-title">Login Pemilih</h1>
+            <p class="login-subtitle">Masukkan Username dan Password Anda.</p>
             
-            <input type="hidden" name="access_code" id="accessCodeHidden">
+            <form action="{{ route('voter.login') }}" method="POST" id="loginFormUserPass">
+                @csrf
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-input" required autofocus>
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label>Password</label>
+                    <input type="password" name="password" class="form-input" required>
+                </div>
+                
+                <button type="submit" class="btn-submit">Masuk</button>
+            </form>
+        @else
+            <h1 class="login-title">Verifikasi Kode</h1>
+            <p class="login-subtitle">Masukkan kode verifikasi unik yang diberikan oleh panitia pemilihan.</p>
             
-            <div class="otp-container">
-                <input type="text" class="otp-input" maxlength="1" autocomplete="off" autofocus>
-                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
-                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
-                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
-                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
-                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
-            </div>
-            
-            <div class="resend-text">
-                Belum mendapatkan kode? <br>
-                <a href="#" class="resend-link">Hubungi Panitia</a>
-            </div>
-            
-            <button type="submit" class="btn-submit">Verifikasi</button>
-        </form>
+            <form action="{{ route('voter.login') }}" method="POST" id="loginForm">
+                @csrf
+                
+                <input type="hidden" name="access_code" id="accessCodeHidden">
+                
+                <div class="otp-container">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off" autofocus>
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                </div>
+                
+                <div class="resend-text">
+                    Belum mendapatkan kode? <br>
+                    <a href="#" class="resend-link">Hubungi Panitia</a>
+                </div>
+                
+                <button type="submit" class="btn-submit">Verifikasi</button>
+            </form>
+        @endif
     </div>
 </div>
 @endsection
@@ -250,6 +306,7 @@
         });
 
         function updateHiddenInput() {
+            if (!hiddenInput) return;
             let code = '';
             inputs.forEach(input => {
                 code += input.value;
@@ -257,17 +314,19 @@
             hiddenInput.value = code;
         }
 
-        form.addEventListener('submit', function(e) {
-            updateHiddenInput();
-            if (hiddenInput.value.length < 6) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Kode Tidak Lengkap',
-                    text: 'Silakan masukkan 6 digit kode akses Anda.'
-                });
-            }
-        });
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                updateHiddenInput();
+                if (hiddenInput.value.length < 6) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kode Tidak Lengkap',
+                        text: 'Silakan masukkan 6 digit kode akses Anda.'
+                    });
+                }
+            });
+        }
     });
 </script>
 @endsection
