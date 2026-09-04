@@ -51,6 +51,7 @@ Route::get('/api/kiosk-token', function() {
 // Admin Dashboard
 Route::middleware('auth:admin')->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::post('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
     
     // Voter Management
     Route::get('/admin/voters', [AdminController::class, 'voters'])->name('admin.voters');

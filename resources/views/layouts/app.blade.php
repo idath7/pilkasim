@@ -167,10 +167,11 @@
         </a>
         <div>
             @auth('admin')
-                <span class="mr-4 text-sm" style="margin-right: 15px;">Halo, Admin</span>
+                <span class="mr-4 text-sm" style="margin-right: 15px;">Halo, {{ Auth::guard('admin')->user()->name ?? 'Admin' }}</span>
+                <button type="button" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.875rem; margin-right: 0.5rem;" onclick="showChangePasswordModal()">Ganti Password</button>
                 <form action="{{ route('admin.logout') }}" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.875rem;">Logout</button>
+                    <button type="submit" class="btn btn-danger" style="padding: 0.4rem 1rem; font-size: 0.875rem; border: none; color: white;">Logout</button>
                 </form>
             @endauth
             
@@ -221,6 +222,47 @@
                 title: '{{ $errors->first() }}'
             });
         @endif
+
+        function showChangePasswordModal() {
+            Swal.fire({
+                title: 'Ganti Password Admin',
+                input: 'password',
+                inputLabel: 'Masukkan password baru',
+                inputPlaceholder: 'Minimal 4 karakter',
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                cancelButtonText: 'Batal',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Password tidak boleh kosong!'
+                    }
+                    if (value.length < 4) {
+                        return 'Password minimal 4 karakter!'
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("admin.password.update") }}';
+                    
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+                    form.appendChild(csrf);
+
+                    const pwd = document.createElement('input');
+                    pwd.type = 'hidden';
+                    pwd.name = 'new_password';
+                    pwd.value = result.value;
+                    form.appendChild(pwd);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
     </script>
     @yield('scripts')
 </body>

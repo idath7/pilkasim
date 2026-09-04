@@ -220,4 +220,17 @@ class AdminController extends Controller
 
         return back()->with('success', 'Pengaturan berhasil diperbarui.');
     }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'new_password' => 'required|string|min:4'
+        ]);
+
+        $admin = \Illuminate\Support\Facades\Auth::guard('admin')->user();
+        $admin->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        $admin->save();
+
+        return back()->with('success', 'Password admin berhasil diubah.');
+    }
 }
