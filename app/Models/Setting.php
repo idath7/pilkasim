@@ -23,6 +23,7 @@ class Setting extends Model
         'login_method',
         'voting_start_time',
         'voting_end_time',
+        'timezone'
     ];
 
     protected $casts = [

@@ -69,7 +69,17 @@
         width: 20px;
         height: 20px;
     }
+    
+    .access-code-box {
+        font-family: monospace;
+        background: #F3F4F6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 @endsection
 
 @section('content')
@@ -115,6 +125,16 @@
                     <input type="number" name="token_duration" value="{{ $setting->token_duration ?? 30 }}" min="5" max="3600" placeholder="Contoh: 30">
                     <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Berapa lama QR Code / Token Kiosk akan bertahan sebelum berganti secara otomatis. Default: 30 detik.</small>
                 </div>
+                
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Zona Waktu Sistem (Timezone)</label>
+                    <select name="timezone" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+                        <option value="Asia/Jakarta" {{ ($setting->timezone ?? 'Asia/Jakarta') == 'Asia/Jakarta' ? 'selected' : '' }}>Waktu Indonesia Barat (WIB)</option>
+                        <option value="Asia/Makassar" {{ ($setting->timezone ?? 'Asia/Jakarta') == 'Asia/Makassar' ? 'selected' : '' }}>Waktu Indonesia Tengah (WITA)</option>
+                        <option value="Asia/Jayapura" {{ ($setting->timezone ?? 'Asia/Jakarta') == 'Asia/Jayapura' ? 'selected' : '' }}>Waktu Indonesia Timur (WIT)</option>
+                    </select>
+                    <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Zona waktu akan memengaruhi kapan pemilihan otomatis dibuka dan ditutup sesuai wilayah Anda.</small>
+                </div>
             </div>
         </div>
         <!-- Jadwal Pemilihan -->
@@ -123,13 +143,13 @@
             <div class="color-picker-grid">
                 <div class="form-group">
                     <label>Waktu Mulai Pemilihan</label>
-                    <input type="datetime-local" name="voting_start_time" value="{{ $setting->voting_start_time ? $setting->voting_start_time->format('Y-m-d\TH:i') : '' }}" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+                    <input type="text" class="flatpickr-datetime" name="voting_start_time" value="{{ $setting->voting_start_time ? $setting->voting_start_time->format('Y-m-d H:i') : '' }}" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit; background: white;" placeholder="Pilih tanggal & jam">
                     <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Kosongkan jika ingin pemilihan selalu terbuka tanpa batasan awal.</small>
                 </div>
                 
                 <div class="form-group">
                     <label>Waktu Tutup Pemilihan</label>
-                    <input type="datetime-local" name="voting_end_time" value="{{ $setting->voting_end_time ? $setting->voting_end_time->format('Y-m-d\TH:i') : '' }}" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+                    <input type="text" class="flatpickr-datetime" name="voting_end_time" value="{{ $setting->voting_end_time ? $setting->voting_end_time->format('Y-m-d H:i') : '' }}" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit; background: white;" placeholder="Pilih tanggal & jam">
                     <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Kosongkan jika ingin pemilihan selalu terbuka tanpa batasan akhir.</small>
                 </div>
             </div>
@@ -204,4 +224,20 @@
         <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-save"></i> Simpan Pengaturan</button>
     </form>
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr(".flatpickr-datetime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            locale: "id", // Bahasa Indonesia
+            allowInput: true
+        });
+    });
+</script>
 @endsection

@@ -223,6 +223,7 @@ class AdminController extends Controller
             'use_gradient' => 'nullable|boolean',
             'token_duration' => 'nullable|integer|min:5|max:3600',
             'login_method' => 'nullable|string|in:access_code,username_password',
+            'timezone' => 'nullable|string|in:Asia/Jakarta,Asia/Makassar,Asia/Jayapura',
             'voting_start_time' => 'nullable|date',
             'voting_end_time' => 'nullable|date',
             'osim_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:10240',
