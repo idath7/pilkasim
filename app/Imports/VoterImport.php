@@ -5,9 +5,21 @@ namespace App\Imports;
 use App\Models\Voter;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class VoterImport implements ToModel
+class VoterImport implements ToModel, WithBatchInserts, WithChunkReading
 {
+    public function batchSize(): int
+    {
+        return 500;
+    }
+
+    public function chunkSize(): int
+    {
+        return 500;
+    }
+
     public function model(array $row): Model|array|null
     {
         // Skip header row or empty names
