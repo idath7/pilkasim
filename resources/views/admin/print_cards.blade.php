@@ -3,12 +3,14 @@
 <head>
   <base target="_top">
   <title>Cetak Kartu Pemilih - e-Pilkasim</title>
-  <style>
-    /* Pengaturan Kertas Folio (F4) 215.9mm x 330.2mm */
+  <style id="page-style">
+    /* Default: Kertas Folio (F4) 215.9mm x 330.2mm */
     @page {
       size: 215.9mm 330.2mm;
       margin: 6mm; 
     }
+  </style>
+  <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #e0e0e0; }
     
     /* Area Kontrol & Filter (Disembunyikan saat Print) */
@@ -95,10 +97,14 @@
 <body>
 
   <div class="no-print">
-    <button onclick="window.print()">🖨️ CETAK KARTU (FOLIO/F4)</button>
-    <p style="font-size: 11px; margin: 0; color: #666;">Pastikan Setting Paper Size: <strong>Folio/F4</strong> | Margins: <strong>None</strong></p>
+    <button onclick="window.print()">🖨️ CETAK KARTU</button>
+    <p id="info-kertas-text" style="font-size: 11px; margin: 0; color: #666;">Pastikan Setting Paper Size: <strong>Folio/F4</strong> | Margins: <strong>None</strong></p>
     
     <div class="filter-container">
+      <select id="filter-kertas" class="filter-box" onchange="ubahUkuranKertas()" style="width: 150px; background: #eef2ff; font-weight: bold; border-color: #4F46E5;">
+        <option value="F4">Kertas Folio / F4</option>
+        <option value="A4">Kertas A4</option>
+      </select>
       <input type="text" id="filter-nama" class="filter-box" placeholder="Cari Nama Pemilih..." onkeyup="terapkanFilter()">
       <select id="filter-kelas" class="filter-box" onchange="terapkanFilter()">
         <option value="">-- Tampilkan Semua {{ $type == 'teacher' ? 'Jabatan/Mapel' : 'Kelas' }} --</option>
@@ -114,6 +120,7 @@
     let dataPesertaMaster = @json($voters);
     const type = "{{ $type }}";
     const appName = "{{ $appSetting->school_name ?? 'PILKASIM 2026' }}";
+    const loginMethod = "{{ $appSetting->login_method ?? 'access_code' }}";
     
     // QR Web = URL root website kita (agar siswa bisa langsung scan ke halaman awal)
     const websiteUrl = "{{ url('/') }}";
@@ -124,6 +131,21 @@
       buatDropdownKelas(dataPesertaMaster);
       tampilkanKartu(dataPesertaMaster);
     });
+
+    // Fungsi mengubah ukuran kertas
+    function ubahUkuranKertas() {
+      const ukuran = document.getElementById('filter-kertas').value;
+      const pageStyle = document.getElementById('page-style');
+      const infoText = document.getElementById('info-kertas-text');
+      
+      if (ukuran === 'F4') {
+        pageStyle.innerHTML = '@page { size: 215.9mm 330.2mm; margin: 6mm; }';
+        infoText.innerHTML = 'Pastikan Setting Paper Size: <strong>Folio/F4</strong> | Margins: <strong>None</strong>';
+      } else {
+        pageStyle.innerHTML = '@page { size: 210mm 297mm; margin: 6mm; }';
+        infoText.innerHTML = 'Pastikan Setting Paper Size: <strong>A4</strong> | Margins: <strong>None</strong>';
+      }
+    }
 
     // Fungsi otomatis mengekstrak daftar kelas dari database
     function buatDropdownKelas(data) {
@@ -169,15 +191,28 @@
       }
 
       data.forEach(peserta => {
-        // Jika login dengan access_code, QR User berisi access_code.
-        // Jika pakai username/pass, QR User berisi username. 
-        // Namun e-Pilkasim punya login manual. Kita set QR ke access_code untuk memudahkan (atau URL langsung).
-        let qrData = peserta.access_code;
+        let qrData = loginMethod === 'username_password' ? (peserta.username || '-') : peserta.access_code;
         let qrUserUrl = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" + encodeURIComponent(qrData);
         
         let idLabel = type === 'teacher' ? 'NIP' : 'NIS';
         let idValue = peserta.nis || '-';
         let classLabel = type === 'teacher' ? 'JABATAN' : 'KELAS';
+        
+        let loginInfoHtml = '';
+        let footerNote = '';
+
+        if (loginMethod === 'username_password') {
+            loginInfoHtml = `
+                <div class="data-row inline"><span class="label">USERNAME</span><span class="value" style="${(peserta.username || '').length > 10 ? 'font-size:9px;' : ''}">${peserta.username || '-'}</span></div>
+                <div class="data-row inline"><span class="label">PASSWORD</span><span class="value">********</span></div>
+            `;
+            footerNote = '* Jaga kerahasiaan Akun Anda.';
+        } else {
+            loginInfoHtml = `
+                <div class="data-row inline" style="grid-column: 1 / -1;"><span class="label">KODE AKSES LOGIN</span><span class="value" style="font-size: 13px; letter-spacing: 2px;">${peserta.access_code}</span></div>
+            `;
+            footerNote = '* Jaga kerahasiaan Kode Akses Anda.';
+        }
         
         html += `
         <div class="kartu">
@@ -201,8 +236,7 @@
               <div class="info-grid">
                 <div class="data-row inline"><span class="label">${idLabel}</span><span class="value">${idValue}</span></div>
                 <div class="data-row inline"><span class="label">${classLabel}</span><span class="value" style="${peserta.class_name.length > 12 ? 'font-size:9px;' : ''}">${peserta.class_name}</span></div>
-                <div class="data-row inline"><span class="label">KODE AKSES</span><span class="value">${peserta.access_code}</span></div>
-                <div class="data-row inline"><span class="label">USERNAME</span><span class="value" style="${(peserta.username || '').length > 10 ? 'font-size:9px;' : ''}">${peserta.username || '-'}</span></div>
+                ${loginInfoHtml}
               </div>
             </div>
 
@@ -215,7 +249,7 @@
             KARTU INI BERSIFAT RAHASIA
           </div>
           <div class="footer-bottom">
-            * Jaga kerahasiaan Kode Akses Anda.
+            ${footerNote}
           </div>
         </div>
         `;
