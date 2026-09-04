@@ -97,7 +97,7 @@
             gap: 0.75rem !important;
         }
         #dynamic-login-link {
-            font-size: 1rem !important;
+            font-size: 0.85rem !important;
             padding-bottom: 0.75rem;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             text-align: center;
@@ -162,16 +162,17 @@
     </div>
     
     <div class="token-url-row" style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
-        <div style="flex: 1; font-family: monospace; font-size: 1.25rem; font-weight: bold; overflow-x: auto; white-space: nowrap;" id="dynamic-login-link">
+        <div style="flex: 1; font-family: monospace; font-size: 1rem; font-weight: bold; overflow-x: auto; white-space: nowrap;" id="dynamic-login-link">
             Memuat link...
         </div>
-        <div class="token-actions" style="display: flex; align-items: center; gap: 1rem;">
-            <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 8px;">
-                <div style="font-size: 1.5rem; font-weight: bold;" id="dynamic-login-timer">30</div>
-                <div style="font-size: 0.75rem;">Detik</div>
+        <div class="token-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 0.5rem; border-radius: 8px; min-width: 72px;">
+                <div style="font-size: 1.5rem; font-weight: bold; line-height: 1;" id="dynamic-login-timer">30</div>
+                <div style="font-size: 0.75rem; margin-top: 4px;">Detik</div>
             </div>
-            <button onclick="copyLoginLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); white-space: nowrap; height: 100%; min-height: 48px;">
-                <i class="fa-solid fa-copy"></i> Salin
+            <button onclick="copyLoginLink()" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 0.5rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 72px; line-height: 1;">
+                <div style="font-size: 1.25rem; margin-bottom: 4px;"><i class="fa-solid fa-copy"></i></div>
+                <div style="font-size: 0.75rem; font-weight: normal;">Salin</div>
             </button>
         </div>
     </div>
