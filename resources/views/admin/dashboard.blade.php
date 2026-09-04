@@ -138,7 +138,10 @@
             <h2 style="margin: 0;">Dashboard Admin</h2>
             <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">Halo, {{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
         </div>
-        <a href="{{ route('admin.dashboard') }}" class="btn" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-rotate-right"></i> Refresh</a>
+        <a href="{{ route('admin.dashboard') }}" class="btn" style="border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 72px; line-height: 1; padding: 0; text-decoration: none;">
+            <div style="font-size: 1.25rem; margin-bottom: 4px;"><i class="fa-solid fa-rotate-right"></i></div>
+            <div style="font-size: 0.75rem; font-weight: normal;">Refresh</div>
+        </a>
     </div>
 </div>
 
