@@ -12,7 +12,7 @@ Route::get('/', function () {
 
 // Voter Auth
 Route::get('/login', [AuthController::class, 'showVoterLogin'])->name('voter.login');
-Route::post('/login', [AuthController::class, 'voterLogin']);
+Route::post('/login', [AuthController::class, 'voterLogin'])->middleware('throttle:15,1');
 Route::post('/logout', [AuthController::class, 'voterLogout'])->name('voter.logout');
 
 // Voting
@@ -23,14 +23,14 @@ Route::middleware('check.user.agent')->group(function () {
 
 // Admin Auth
 Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+Route::post('/admin/login', [AuthController::class, 'adminLogin'])->middleware('throttle:15,1');
 Route::post('/admin/logout', [AuthController::class, 'adminLogout'])->name('admin.logout');
 
 Route::get('/kiosk/login', [AuthController::class, 'showKioskLogin'])->name('kiosk.login');
-Route::post('/kiosk/login', [AuthController::class, 'kioskLogin']);
+Route::post('/kiosk/login', [AuthController::class, 'kioskLogin'])->middleware('throttle:15,1');
 
 Route::get('/kiosk', function () {
-    $appSetting = \App\Models\Setting::first();
+    $appSetting = \App\Models\Setting::getCached();
     if ($appSetting && $appSetting->kiosk_pin && !session()->has('kiosk_authenticated')) {
         return redirect()->route('kiosk.login');
     }
@@ -38,12 +38,12 @@ Route::get('/kiosk', function () {
 })->name('kiosk');
 
 Route::get('/scanner', function () {
-    $appSetting = \App\Models\Setting::first();
+    $appSetting = \App\Models\Setting::getCached();
     return view('scanner.index', compact('appSetting'));
 })->name('scanner');
 
 Route::get('/api/kiosk-token', function() {
-    $setting = \App\Models\Setting::first();
+    $setting = \App\Models\Setting::getCached();
     $duration = $setting->token_duration ?? 30;
     $token = \Illuminate\Support\Str::random(12);
     \Illuminate\Support\Facades\Cache::put('kiosk_token_' . $token, 'pending', now()->addMinutes(60));
@@ -116,4 +116,8 @@ Route::middleware('auth:admin')->group(function () {
     // App Settings
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::post('/admin/settings', [AdminController::class, 'updateSettings'])->name('admin.settings.update');
+    Route::post('/admin/optimize', [AdminController::class, 'optimize'])->name('admin.optimize');
+    
+    // Auth & Others
+    Route::post('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
 });

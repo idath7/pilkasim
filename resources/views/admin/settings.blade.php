@@ -230,8 +230,47 @@
             </div>
         </div>
         
+        <!-- Meta SEO & OpenGraph -->
+        <div class="form-section">
+            <div class="form-section-title" style="color: #4F46E5;"><i class="fa-solid fa-magnifying-glass"></i> Meta SEO & OpenGraph</div>
+            <p style="font-size: 0.9rem; color: #555; margin-bottom: 1.5rem;">Pengaturan ini akan digunakan oleh mesin pencari (seperti Google) dan saat link aplikasi dibagikan di WhatsApp atau Sosial Media.</p>
+            
+            <div class="form-group">
+                <label style="font-weight: 600; color: #333;">Judul SEO (Title)</label>
+                <input type="text" name="seo_title" value="{{ $setting->seo_title }}" placeholder="Contoh: Aplikasi SiPresensi Terbaik" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight: 600; color: #333;">Deskripsi SEO (Description)</label>
+                <textarea name="seo_description" rows="3" placeholder="Deskripsi singkat tentang aplikasi (maksimal 160 karakter)." style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit; resize: vertical;">{{ $setting->seo_description }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight: 600; color: #333;">Gambar SEO (OpenGraph Image)</label>
+                <div style="border: 1px solid var(--border); padding: 0.5rem; border-radius: var(--radius); display: inline-block; width: 100%; box-sizing: border-box; background: white;">
+                    <input type="file" name="seo_image" accept="image/*" style="width: 100%;">
+                </div>
+                <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Gambar ini akan muncul saat link dibagikan. Rekomendasi ukuran standar SEO: <strong>1200x630 piksel</strong> (Rasio 1.91:1) dan maksimal ukuran file 5MB.</p>
+                @if($setting->seo_image)
+                    <div style="margin-top: 1rem;">
+                        <img src="{{ Storage::url($setting->seo_image) }}" alt="SEO Image" style="max-width: 300px; border-radius: 8px; border: 1px solid var(--border);">
+                    </div>
+                @endif
+            </div>
+        </div>
+        
         <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-save"></i> Simpan Pengaturan</button>
     </form>
+
+    <!-- Super Speed / Cache -->
+    <div class="form-section" style="margin-top: 2rem;">
+        <div class="form-section-title" style="color: #10B981;"><i class="fa-solid fa-bolt"></i> Super Speed & Optimalisasi (Cache)</div>
+        <p style="font-size: 0.9rem; color: #555; margin-bottom: 1.5rem;">Jika aplikasi terasa lambat setelah melakukan banyak perubahan, klik tombol ini untuk melakukan kompilasi ulang (Caching) agar sistem berjalan super cepat kembali. Fitur ini sangat direkomendasikan jika server Anda sering kepenuhan (overload).</p>
+        <form action="{{ route('admin.optimize') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn" style="background: #10B981; border: none; padding: 0.75rem 1.5rem;"><i class="fa-solid fa-broom"></i> Bersihkan & Optimalkan Cache</button>
+        </form>
+    </div>
 </div>
 @endsection
 

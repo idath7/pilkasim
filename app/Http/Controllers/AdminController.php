@@ -52,7 +52,7 @@ class AdminController extends Controller
     {
         $type = $request->query('type', 'student');
         $voters = Voter::where('type', $type)->orderBy('class_name')->orderBy('name')->get();
-        $appSetting = \App\Models\Setting::first();
+        $appSetting = \App\Models\Setting::getCached();
         
         return view('admin.print_cards', compact('voters', 'type', 'appSetting'));
     }
@@ -240,7 +240,7 @@ class AdminController extends Controller
 
     public function updateSettings(Request $request)
     {
-        $setting = \App\Models\Setting::first();
+        $setting = \App\Models\Setting::getCached();
         
         $data = $request->validate([
             'school_name' => 'nullable|string',
@@ -261,6 +261,9 @@ class AdminController extends Controller
             'osim_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:10240',
             'school_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:10240',
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:10240',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:255',
+            'seo_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
         
         $data['use_gradient'] = $request->has('use_gradient');
@@ -275,8 +278,14 @@ class AdminController extends Controller
         if ($request->hasFile('main_image')) {
             $data['main_image'] = $this->compressImage($request->file('main_image'), 'settings', 1600);
         }
+        if ($request->hasFile('seo_image')) {
+            $data['seo_image'] = $this->compressImage($request->file('seo_image'), 'settings', 1200);
+        }
 
         $setting->update($data);
+
+        // Clear cache
+        \Illuminate\Support\Facades\Cache::forget('app_settings');
 
         return back()->with('success', 'Pengaturan berhasil diperbarui.');
     }
@@ -292,6 +301,13 @@ class AdminController extends Controller
         $admin->save();
 
         return back()->with('success', 'Password berhasil diubah.');
+    }
+
+    public function optimize()
+    {
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        \Illuminate\Support\Facades\Artisan::call('optimize');
+        return back()->with('success', 'Sistem berhasil dioptimalkan (Cache Cleared & Re-cached).');
     }
 
     /**
@@ -349,3 +365,4 @@ class AdminController extends Controller
         return '/storage/' . $folder . '/' . $filename;
     }
 }
+

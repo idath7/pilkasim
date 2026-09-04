@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kiosk Auth | e-Pilkasim</title>
+    @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
+    @if($faviconSetting && $faviconSetting->logo_osim)
+        <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/x-icon">
+    @endif
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -205,3 +209,4 @@
     </script>
 </body>
 </html>
+

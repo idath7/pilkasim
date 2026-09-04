@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
 
         try {
             if (Schema::hasTable('settings')) {
-                $appSetting = Setting::first();
+                $appSetting = Setting::getCached();
                 View::share('appSetting', $appSetting);
             }
         } catch (\Exception $e) {
@@ -40,3 +40,4 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 }
+

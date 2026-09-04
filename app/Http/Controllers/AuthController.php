@@ -20,7 +20,7 @@ class AuthController extends Controller
 
     public function voterLogin(Request $request)
     {
-        $setting = \App\Models\Setting::first();
+        $setting = \App\Models\Setting::getCached();
         $loginMethod = $setting->login_method ?? 'access_code';
 
         $voter = null;
@@ -109,7 +109,7 @@ class AuthController extends Controller
     // Kiosk Auth
     public function showKioskLogin()
     {
-        $setting = \App\Models\Setting::first();
+        $setting = \App\Models\Setting::getCached();
         // If no PIN is set, auto bypass
         if (!$setting || !$setting->kiosk_pin) {
             session(['kiosk_authenticated' => true]);
@@ -126,7 +126,7 @@ class AuthController extends Controller
 
     public function kioskLogin(Request $request)
     {
-        $setting = \App\Models\Setting::first();
+        $setting = \App\Models\Setting::getCached();
         if (!$setting || !$setting->kiosk_pin) {
             return redirect()->route('kiosk');
         }
@@ -143,3 +143,4 @@ class AuthController extends Controller
         return back()->with('error', 'PIN/Token Kiosk tidak valid!');
     }
 }
+

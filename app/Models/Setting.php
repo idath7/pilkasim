@@ -25,10 +25,30 @@ class Setting extends Model
         'voting_end_time',
         'timezone',
         'kiosk_pin',
+        'seo_title',
+        'seo_description',
+        'seo_image',
     ];
 
     protected $casts = [
         'voting_start_time' => 'datetime',
         'voting_end_time' => 'datetime',
     ];
+
+    /**
+     * Get the cached settings to reduce database queries.
+     *
+     * @return self
+     */
+    public static function getCached()
+    {
+        return \Illuminate\Support\Facades\Cache::rememberForever('app_settings', function () {
+            return self::firstOrCreate([
+                'id' => 1
+            ], [
+                'school_name' => 'Nama Sekolah Anda',
+                'instructions' => 'Masukkan Kode Akses unik yang telah diberikan oleh panitia.',
+            ]);
+        });
+    }
 }

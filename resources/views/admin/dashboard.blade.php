@@ -94,13 +94,9 @@
 
 @section('content')
 <div class="dashboard-header animate-fade-in">
-    <h2>Dashboard Admin</h2>
-    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <a href="{{ route('admin.voters') }}" class="btn btn-secondary"><i class="fa-solid fa-users"></i> Pemilih (Siswa)</a>
-        <a href="{{ route('admin.teachers') }}" class="btn btn-secondary"><i class="fa-solid fa-chalkboard-user"></i> Pemilih (Guru)</a>
-        <a href="{{ route('admin.candidates') }}" class="btn btn-secondary"><i class="fa-solid fa-user-tie"></i> Kandidat</a>
-        <a href="{{ route('admin.settings') }}" class="btn btn-secondary"><i class="fa-solid fa-gear"></i> Pengaturan</a>
-        <a href="{{ route('admin.dashboard') }}" class="btn"><i class="fa-solid fa-rotate-right"></i> Refresh</a>
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <h2 style="margin: 0;">Dashboard Admin</h2>
+        <a href="{{ route('admin.dashboard') }}" class="btn" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-rotate-right"></i> Refresh</a>
     </div>
 </div>
 
@@ -187,6 +183,48 @@
             </div>
         </div>
     @endforeach
+</div>
+
+<div class="animate-fade-in" style="animation-delay: 0.3s; margin-top: 3rem;">
+    <div style="display: flex; align-items: center; text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
+        <div style="flex: 1; border-bottom: 1px dashed var(--border);"></div>
+        <span style="padding: 0 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;"><i class="fa-solid fa-compass"></i> Menu Navigasi Admin</span>
+        <div style="flex: 1; border-bottom: 1px dashed var(--border);"></div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <a href="{{ route('admin.voters') }}" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-decoration: none; transition: all 0.3s ease; text-align: center; border: 1px solid var(--border);">
+            <div style="width: 60px; height: 60px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <h4 style="margin: 0; color: var(--text);">Kelola Pemilih (Siswa)</h4>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Data siswa & cetak kartu</p>
+        </a>
+        
+        <a href="{{ route('admin.teachers') }}" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-decoration: none; transition: all 0.3s ease; text-align: center; border: 1px solid var(--border);">
+            <div style="width: 60px; height: 60px; background: rgba(16, 185, 129, 0.1); color: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <h4 style="margin: 0; color: var(--text);">Kelola Pemilih (Guru)</h4>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Data guru & hak suara</p>
+        </a>
+        
+        <a href="{{ route('admin.candidates') }}" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-decoration: none; transition: all 0.3s ease; text-align: center; border: 1px solid var(--border);">
+            <div style="width: 60px; height: 60px; background: rgba(245, 158, 11, 0.1); color: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <h4 style="margin: 0; color: var(--text);">Kandidat Ketua</h4>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Visi, misi, dan foto calon</p>
+        </a>
+        
+        <a href="{{ route('admin.settings') }}" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-decoration: none; transition: all 0.3s ease; text-align: center; border: 1px solid var(--border);">
+            <div style="width: 60px; height: 60px; background: rgba(107, 114, 128, 0.1); color: #6B7280; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+            <h4 style="margin: 0; color: var(--text);">Pengaturan Sistem</h4>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Tema, jadwal, dan SEO</p>
+        </a>
+    </div>
 </div>
 @endsection
 

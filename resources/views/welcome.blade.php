@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Selamat Datang | e-Pilkasim</title>
+    @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
+    @if($faviconSetting)
+        @if($faviconSetting->logo_osim)
+            <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/x-icon">
+        @endif
+        @if($faviconSetting->seo_title || $faviconSetting->seo_description)
+            <meta name="description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
+            <meta property="og:title" content="{{ $faviconSetting->seo_title ?? 'e-Pilkasim' }}">
+            <meta property="og:description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
+            @if($faviconSetting->seo_image)
+                <meta property="og:image" content="{{ url(Storage::url($faviconSetting->seo_image)) }}">
+            @endif
+            <meta property="og:type" content="website">
+        @endif
+    @endif
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -258,3 +273,4 @@
     </script>
 </body>
 </html>
+
