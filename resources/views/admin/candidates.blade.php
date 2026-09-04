@@ -30,6 +30,7 @@
         min-height: 120px;
         height: auto;
         object-fit: cover;
+        object-position: top center;
         background-color: var(--surface);
         padding: 2px;
         border-radius: 12px 0 0 12px; /* Melengkung di sisi kiri mengikuti kartu */

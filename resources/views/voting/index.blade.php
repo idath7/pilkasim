@@ -28,8 +28,9 @@
     
     .candidate-photo {
         width: 100%;
-        height: 250px;
+        height: 320px;
         object-fit: cover;
+        object-position: top center;
         border-radius: var(--radius) var(--radius) 0 0;
         margin-bottom: 1rem;
         background-color: #E5E7EB;

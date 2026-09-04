@@ -60,6 +60,7 @@
         height: 80px;
         border-radius: 50%;
         object-fit: cover;
+        object-position: top center;
         background-color: #E5E7EB;
     }
     
