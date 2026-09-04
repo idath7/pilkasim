@@ -109,12 +109,15 @@
             <h3 style="margin-top: 0; color: white;">Link Login & Layar Kiosk</h3>
             <p style="opacity: 0.9; margin-bottom: 0;">Gunakan fitur Kiosk untuk menampilkan QR Code di layar besar, atau salin link login langsung jika diperlukan.</p>
         </div>
-        <div style="display: flex; gap: 0.5rem;">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
             <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: white; color: var(--primary); border: none;">
                 <i class="fa-solid fa-desktop"></i> Buka Kiosk
             </a>
+            <button onclick="document.getElementById('qrModal').style.display='block'" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
+                <i class="fa-solid fa-qrcode"></i> QR Website
+            </button>
             <button onclick="copyKioskLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
-                <i class="fa-solid fa-link"></i> Salin URL Kiosk
+                <i class="fa-solid fa-link"></i> Salin Kiosk
             </button>
         </div>
     </div>
@@ -185,6 +188,23 @@
     @endforeach
 </div>
 @endsection
+
+<!-- Modal QR Code -->
+<div id="qrModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background-color: var(--surface); margin: 10% auto; padding: 2rem; border-radius: var(--radius); max-width: 400px; position: relative; box-shadow: var(--shadow-lg); text-align: center;">
+        <span class="close-btn" onclick="document.getElementById('qrModal').style.display='none'" style="position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; font-weight: bold; cursor: pointer; color: var(--text-muted);">&times;</span>
+        <h3 style="margin-bottom: 1rem;">QR Code Website</h3>
+        <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Siswa dapat men-scan QR Code ini dari HP mereka untuk langsung membuka website pemilihan.</p>
+        
+        <div style="background: white; padding: 1rem; display: inline-block; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border);">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ urlencode(url('/')) }}" alt="QR Code" style="width: 250px; height: 250px; display: block;">
+        </div>
+        
+        <div style="font-family: monospace; font-size: 1rem; font-weight: bold; word-break: break-all; background: #f3f4f6; padding: 0.75rem; border-radius: var(--radius);">
+            {{ url('/') }}
+        </div>
+    </div>
+</div>
 
 @section('scripts')
 <script>
