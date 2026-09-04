@@ -122,13 +122,34 @@
             
             <div class="form-group" style="background: #f9fafb; padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--border);">
                 <label>Pilih dari Data Pemilih (Opsional)</label>
-                <select id="voterSelect" onchange="autofillVoter()" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
-                    <option value="">-- Ketik manual di bawah atau pilih siswa --</option>
-                    @foreach($voters as $voter)
-                        <option value="{{ $voter->name }}|{{ $voter->class_name }}">{{ $voter->name }} ({{ $voter->class_name }})</option>
-                    @endforeach
-                </select>
-                <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Pilih siswa untuk mengisi otomatis Nama dan Kelas di bawah ini.</small>
+                
+                <!-- Custom Searchable Dropdown -->
+                <div class="custom-select-wrapper" style="position: relative; margin-top: 0.5rem;">
+                    <div class="custom-select-trigger" onclick="toggleDropdown()" style="padding: 0.75rem; background: white; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                        <span id="custom-select-text">-- Cari atau pilih siswa --</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    
+                    <div class="custom-options-container" id="custom-options" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: var(--radius); margin-top: 0.25rem; box-shadow: var(--shadow-lg); z-index: 100; max-height: 250px; overflow-y: auto;">
+                        <div style="padding: 0.5rem; position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border);">
+                            <input type="text" id="voterSearchInput" onkeyup="filterVoters()" placeholder="Ketik nama siswa..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                        </div>
+                        
+                        <div class="custom-option" onclick="selectVoter('', '-- Cari atau pilih siswa --')" style="padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
+                            <span>Reset Pilihan / Ketik Manual</span>
+                        </div>
+                        
+                        @foreach($voters as $voter)
+                        <div class="custom-option voter-option" data-name="{{ strtolower($voter->name) }}" onclick="selectVoter('{{ addslashes($voter->name) }}|{{ addslashes($voter->class_name) }}', '{{ addslashes($voter->name) }} ({{ addslashes($voter->class_name) }})', this)" style="padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s;">
+                            <span>{{ $voter->name }} <small style="color: var(--text-muted);">({{ $voter->class_name }})</small></span>
+                            <i class="fa-solid fa-check check-icon" style="color: var(--primary); display: none;"></i>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                <!-- End Custom Searchable Dropdown -->
+                
+                <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Siswa yang sudah menjadi kandidat tidak akan muncul di daftar ini.</small>
             </div>
             
             <div class="form-group">
@@ -289,15 +310,70 @@
         document.getElementById('editCandidateModal').style.display = 'block';
     }
 
-    function autofillVoter() {
-        var select = document.getElementById('voterSelect');
-        var val = select.value;
+    function toggleDropdown() {
+        var options = document.getElementById('custom-options');
+        options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        if(options.style.display === 'block') {
+            document.getElementById('voterSearchInput').focus();
+        }
+    }
+
+    function filterVoters() {
+        var input = document.getElementById('voterSearchInput').value.toLowerCase();
+        var options = document.getElementsByClassName('voter-option');
+        
+        for (var i = 0; i < options.length; i++) {
+            var name = options[i].getAttribute('data-name');
+            if (name.includes(input)) {
+                options[i].style.display = "flex";
+            } else {
+                options[i].style.display = "none";
+            }
+        }
+    }
+
+    function selectVoter(val, displayText, element = null) {
+        // Reset all backgrounds and checkmarks
+        var allOptions = document.getElementsByClassName('voter-option');
+        for (var i = 0; i < allOptions.length; i++) {
+            allOptions[i].style.backgroundColor = "transparent";
+            var icon = allOptions[i].querySelector('.check-icon');
+            if(icon) icon.style.display = "none";
+        }
+        
+        // Set text
+        document.getElementById('custom-select-text').innerText = displayText;
+        
+        // Auto fill logic
         if(val) {
             var parts = val.split('|');
             document.getElementById('addName').value = parts[0];
             document.getElementById('addClassName').value = parts[1];
+            
+            // Set active styles
+            if(element) {
+                element.style.backgroundColor = "#e0f2fe"; // Light blue active bg
+                var icon = element.querySelector('.check-icon');
+                if(icon) icon.style.display = "block";
+            }
+        } else {
+            document.getElementById('addName').value = '';
+            document.getElementById('addClassName').value = '';
         }
+        
+        // Close dropdown
+        document.getElementById('custom-options').style.display = 'none';
+        document.getElementById('voterSearchInput').value = '';
+        filterVoters(); // reset filter
     }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        var wrapper = document.querySelector('.custom-select-wrapper');
+        if (wrapper && !wrapper.contains(event.target)) {
+            document.getElementById('custom-options').style.display = 'none';
+        }
+    });
     
     // Close modal when clicking outside
     window.onclick = function(event) {

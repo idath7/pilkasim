@@ -107,7 +107,11 @@ class AdminController extends Controller
     public function candidates()
     {
         $candidates = Candidate::all();
-        $voters = Voter::orderBy('name')->get();
+        $existingCandidates = $candidates->map(function($c) { return $c->name . '|' . $c->class_name; })->toArray();
+        $voters = Voter::orderBy('name')->get()->filter(function($voter) use ($existingCandidates) {
+            return !in_array($voter->name . '|' . $voter->class_name, $existingCandidates);
+        });
+        
         return view('admin.candidates', compact('candidates', 'voters'));
     }
 
