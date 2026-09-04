@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         try {
             if (Schema::hasTable('settings')) {
                 $appSetting = Setting::first();
