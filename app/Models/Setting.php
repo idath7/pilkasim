@@ -42,13 +42,11 @@ class Setting extends Model
      */
     public static function getCached()
     {
-        return \Illuminate\Support\Facades\Cache::rememberForever('app_settings', function () {
-            return self::firstOrCreate([
-                'id' => 1
-            ], [
-                'school_name' => 'Nama Sekolah Anda',
-                'instructions' => 'Masukkan Kode Akses unik yang telah diberikan oleh panitia.',
-            ]);
-        });
+        return self::firstOrCreate([
+            'id' => 1
+        ], [
+            'school_name' => 'Nama Sekolah Anda',
+            'instructions' => 'Masukkan Kode Akses unik yang telah diberikan oleh panitia.',
+        ]);
     }
 }

@@ -285,7 +285,7 @@ class AdminController extends Controller
         $setting->update($data);
 
         // Clear cache
-        \Illuminate\Support\Facades\Cache::forget('app_settings');
+        \Illuminate\Support\Facades\Cache::forget('app_settings_v2');
 
         return back()->with('success', 'Pengaturan berhasil diperbarui.');
     }
