@@ -84,8 +84,10 @@
     
     .otp-input {
         width: 100%;
+        max-width: 65px;
+        margin: 0 auto;
         aspect-ratio: 1;
-        font-size: 2.25rem;
+        font-size: 2.75rem;
         font-weight: 700;
         text-align: center;
         border: 2px solid transparent;
@@ -187,7 +189,8 @@
             gap: 0.5rem;
         }
         .otp-input {
-            font-size: 1.5rem;
+            max-width: 55px;
+            font-size: 2.25rem;
             border-radius: 8px;
         }
         .login-icon {
