@@ -214,6 +214,8 @@ class AdminController extends Controller
             'use_gradient' => 'nullable|boolean',
             'token_duration' => 'nullable|integer|min:5|max:3600',
             'login_method' => 'nullable|string|in:access_code,username_password',
+            'voting_start_time' => 'nullable|date',
+            'voting_end_time' => 'nullable|date',
             'osim_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'school_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',

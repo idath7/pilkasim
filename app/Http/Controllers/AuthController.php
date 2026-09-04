@@ -49,6 +49,15 @@ class AuthController extends Controller
         }
 
         if ($voter) {
+            // Check voting schedule
+            $now = now();
+            if ($setting->voting_start_time && $now->lt($setting->voting_start_time)) {
+                return back()->with('error', 'Pemilihan belum dimulai. Silakan kembali pada ' . $setting->voting_start_time->format('d/m/Y H:i') . '.');
+            }
+            if ($setting->voting_end_time && $now->gt($setting->voting_end_time)) {
+                return back()->with('error', 'Pemilihan sudah ditutup sejak ' . $setting->voting_end_time->format('d/m/Y H:i') . '.');
+            }
+
             if ($voter->has_voted) {
                 return back()
                     ->with('error', 'Maaf, Anda sudah pernah memberikan suara pemilihan dengan akun ini.')

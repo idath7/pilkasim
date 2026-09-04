@@ -117,6 +117,23 @@
                 </div>
             </div>
         </div>
+        <!-- Jadwal Pemilihan -->
+        <div class="form-section">
+            <div class="form-section-title"><i class="fa-solid fa-clock"></i> Jadwal Pemilihan</div>
+            <div class="color-picker-grid">
+                <div class="form-group">
+                    <label>Waktu Mulai Pemilihan</label>
+                    <input type="datetime-local" name="voting_start_time" value="{{ $setting->voting_start_time ? $setting->voting_start_time->format('Y-m-d\TH:i') : '' }}" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+                    <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Kosongkan jika ingin pemilihan selalu terbuka tanpa batasan awal.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Waktu Tutup Pemilihan</label>
+                    <input type="datetime-local" name="voting_end_time" value="{{ $setting->voting_end_time ? $setting->voting_end_time->format('Y-m-d\TH:i') : '' }}" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+                    <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Kosongkan jika ingin pemilihan selalu terbuka tanpa batasan akhir.</small>
+                </div>
+            </div>
+        </div>
 
         <!-- Tema & Warna -->
         <div class="form-section">

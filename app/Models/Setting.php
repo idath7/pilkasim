@@ -21,5 +21,12 @@ class Setting extends Model
         'use_gradient',
         'token_duration',
         'login_method',
+        'voting_start_time',
+        'voting_end_time',
+    ];
+
+    protected $casts = [
+        'voting_start_time' => 'datetime',
+        'voting_end_time' => 'datetime',
     ];
 }
