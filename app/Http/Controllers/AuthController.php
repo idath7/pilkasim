@@ -105,4 +105,41 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('admin.login');
     }
+
+    // Kiosk Auth
+    public function showKioskLogin()
+    {
+        $setting = \App\Models\Setting::first();
+        // If no PIN is set, auto bypass
+        if (!$setting || !$setting->kiosk_pin) {
+            session(['kiosk_authenticated' => true]);
+            return redirect()->route('kiosk');
+        }
+
+        if (session()->has('kiosk_authenticated')) {
+            return redirect()->route('kiosk');
+        }
+        
+        $appSetting = $setting;
+        return view('kiosk.login', compact('appSetting'));
+    }
+
+    public function kioskLogin(Request $request)
+    {
+        $setting = \App\Models\Setting::first();
+        if (!$setting || !$setting->kiosk_pin) {
+            return redirect()->route('kiosk');
+        }
+
+        $request->validate([
+            'pin' => 'required|string',
+        ]);
+
+        if (strtoupper($request->pin) === strtoupper($setting->kiosk_pin)) {
+            session(['kiosk_authenticated' => true]);
+            return redirect()->route('kiosk');
+        }
+
+        return back()->with('error', 'PIN/Token Kiosk tidak valid!');
+    }
 }

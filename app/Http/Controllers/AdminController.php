@@ -16,19 +16,45 @@ class AdminController extends Controller
     public function dashboard()
     {
         $candidates = Candidate::all();
-        $totalVoters = Voter::count();
-        $votedCount = Voter::where('has_voted', true)->count();
-        $unvotedCount = $totalVoters - $votedCount;
+        $totalStudentVoters = Voter::where('type', 'student')->count();
+        $votedStudentCount = Voter::where('type', 'student')->where('has_voted', true)->count();
+        $unvotedStudentCount = $totalStudentVoters - $votedStudentCount;
 
-        return view('admin.dashboard', compact('candidates', 'totalVoters', 'votedCount', 'unvotedCount'));
+        $totalTeacherVoters = Voter::where('type', 'teacher')->count();
+        $votedTeacherCount = Voter::where('type', 'teacher')->where('has_voted', true)->count();
+        $unvotedTeacherCount = $totalTeacherVoters - $votedTeacherCount;
+
+        $votedCount = Voter::where('has_voted', true)->count(); // Overall voted count for percentages
+
+        return view('admin.dashboard', compact(
+            'candidates', 
+            'totalStudentVoters', 'votedStudentCount', 'unvotedStudentCount',
+            'totalTeacherVoters', 'votedTeacherCount', 'unvotedTeacherCount',
+            'votedCount'
+        ));
     }
 
     // --- VOTER MANAGEMENT ---
 
     public function voters()
     {
-        $voters = Voter::orderBy('class_name')->get();
+        $voters = Voter::where('type', 'student')->orderBy('class_name')->get();
         return view('admin.voters', compact('voters'));
+    }
+
+    public function teachers()
+    {
+        $voters = Voter::where('type', 'teacher')->orderBy('class_name')->get();
+        return view('admin.teachers', compact('voters'));
+    }
+
+    public function printCards(Request $request)
+    {
+        $type = $request->query('type', 'student');
+        $voters = Voter::where('type', $type)->orderBy('class_name')->orderBy('name')->get();
+        $appSetting = \App\Models\Setting::first();
+        
+        return view('admin.print_cards', compact('voters', 'type', 'appSetting'));
     }
 
     public function storeVoter(Request $request)
@@ -41,9 +67,11 @@ class AdminController extends Controller
             'access_code' => 'nullable|string|unique:voters,access_code',
             'username' => 'nullable|string|unique:voters,username',
             'password' => 'nullable|string|min:4',
+            'type' => 'nullable|string|in:student,teacher',
         ]);
 
         $voterData = [
+            'type' => $request->input('type', 'student'),
             'nis' => $request->nis,
             'name' => $request->name,
             'class_name' => $request->class_name,
@@ -100,12 +128,15 @@ class AdminController extends Controller
     public function importVoters(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls'
+            'file' => 'required|mimes:xlsx,xls',
+            'type' => 'nullable|string|in:student,teacher'
         ]);
 
+        $type = $request->input('type', 'student');
+
         try {
-            Excel::import(new VoterImport, $request->file('file'));
-            return back()->with('success', 'Data pemilih berhasil diimpor dari Excel.');
+            Excel::import(new VoterImport($type), $request->file('file'));
+            return back()->with('success', 'Data pemilih (' . ($type == 'teacher' ? 'Guru' : 'Siswa') . ') berhasil diimpor dari Excel.');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal mengimpor file: ' . $e->getMessage());
         }
@@ -222,6 +253,7 @@ class AdminController extends Controller
             'theme_color_6' => 'nullable|string|max:20',
             'use_gradient' => 'nullable|boolean',
             'token_duration' => 'nullable|integer|min:5|max:3600',
+            'kiosk_pin' => 'nullable|string|max:6',
             'login_method' => 'nullable|string|in:access_code,username_password',
             'timezone' => 'nullable|string|in:Asia/Jakarta,Asia/Makassar,Asia/Jayapura',
             'voting_start_time' => 'nullable|date',

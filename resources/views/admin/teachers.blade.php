@@ -62,16 +62,16 @@
 
 @section('content')
 <div class="header-flex animate-fade-in">
-    <h2>Daftar Pemilih (Siswa) & Kode Akses</h2>
+    <h2>Daftar Pemilih (Guru) & Kode Akses</h2>
     <div style="display: flex; gap: 0.5rem; align-items: center;">
         <button onclick="document.getElementById('addModal').style.display='block'" class="btn"><i class="fa-solid fa-plus"></i> Tambah</button>
         <button onclick="document.getElementById('importModal').style.display='block'" class="btn" style="background-color: var(--secondary);"><i class="fa-solid fa-file-excel"></i> Import</button>
-        <a href="{{ route('admin.voters.print', ['type' => 'student']) }}" target="_blank" class="btn" style="background-color: #6366f1;"><i class="fa-solid fa-print"></i> Cetak Kartu</a>
-        <form action="{{ route('admin.voters.reset_votes') }}" method="POST" onsubmit="return confirm('Hasil perolehan suara akan dikosongkan dan status memilih siswa akan direset. Anda yakin?');" style="display:inline;">
+        <a href="{{ route('admin.voters.print', ['type' => 'teacher']) }}" target="_blank" class="btn" style="background-color: #6366f1;"><i class="fa-solid fa-print"></i> Cetak Kartu</a>
+        <form action="{{ route('admin.voters.reset_votes') }}" method="POST" onsubmit="return confirm('Hasil perolehan suara akan dikosongkan dan status memilih akan direset. Anda yakin?');" style="display:inline;">
             @csrf
             <button type="submit" class="btn btn-danger" style="background-color: #f59e0b;"><i class="fa-solid fa-rotate-left"></i> Reset Suara</button>
         </form>
-        <form action="{{ route('admin.voters.reset_all') }}" method="POST" onsubmit="return confirm('Peringatan: Seluruh data pemilih akan dihapus dari database! Anda yakin?');" style="display:inline;">
+        <form action="{{ route('admin.voters.reset_all') }}" method="POST" onsubmit="return confirm('Peringatan: Seluruh data pemilih (termasuk guru & siswa) akan dihapus dari database! Anda yakin?');" style="display:inline;">
             @csrf
             <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Hapus Semua</button>
         </form>
@@ -84,9 +84,9 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>NIS</th>
+                <th>NIP / ID</th>
                 <th>Nama Lengkap</th>
-                <th>Kelas</th>
+                <th>Jabatan / Mapel</th>
                 <th>L/P</th>
                 <th>Username</th>
                 <th>Kode Akses</th>
@@ -114,7 +114,7 @@
                     @endif
                 </td>
                 <td>
-                    <form action="{{ route('admin.voters.reset', $voter->id) }}" method="POST" onsubmit="return confirm('Reset status pemilihan siswa ini?');">
+                    <form action="{{ route('admin.voters.reset', $voter->id) }}" method="POST" onsubmit="return confirm('Reset status pemilihan guru ini?');">
                         @csrf
                         <button type="submit" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-rotate-left"></i> Reset Status</button>
                     </form>
@@ -129,12 +129,13 @@
 <div id="addModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
     <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
         <span onclick="document.getElementById('addModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
-        <h3 style="margin-bottom: 1.5rem;">Tambah Pemilih Manual</h3>
+        <h3 style="margin-bottom: 1.5rem;">Tambah Pemilih (Guru) Manual</h3>
         <form action="{{ route('admin.voters.store') }}" method="POST">
             @csrf
-            <div class="form-group"><label>NIS</label><input type="text" name="nis"></div>
+            <input type="hidden" name="type" value="teacher">
+            <div class="form-group"><label>NIP / ID (Opsional)</label><input type="text" name="nis"></div>
             <div class="form-group"><label>Nama Lengkap</label><input type="text" name="name" required></div>
-            <div class="form-group"><label>Kelas</label><input type="text" name="class_name" required></div>
+            <div class="form-group"><label>Jabatan / Mapel</label><input type="text" name="class_name" required></div>
             <div class="form-group">
                 <label>Jenis Kelamin</label>
                 <select name="gender" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);">
@@ -173,6 +174,7 @@
 
         <form action="{{ route('admin.voters.import') }}" method="POST" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="type" value="teacher">
             <div class="form-group">
                 <label>Pilih File Excel (.xlsx)</label>
                 <input type="file" name="file" accept=".xlsx, .xls" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">

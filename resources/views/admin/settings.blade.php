@@ -127,6 +127,15 @@
                 </div>
                 
                 <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>PIN/Token Keamanan Kiosk (6 Karakter)</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" name="kiosk_pin" id="kiosk_pin" value="{{ $setting->kiosk_pin }}" maxlength="6" placeholder="Kosongkan jika tidak ingin dikunci" style="flex: 1; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px;">
+                        <button type="button" class="btn" style="background-color: var(--secondary);" onclick="generateKioskPin()"><i class="fa-solid fa-dice"></i> Generate Token</button>
+                    </div>
+                    <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Jika diisi, layar Kiosk akan terkunci dan meminta PIN ini sebelum bisa menampilkan QR Code.</small>
+                </div>
+                
+                <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Zona Waktu Sistem (Timezone)</label>
                     <select name="timezone" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
                         <option value="Asia/Jakarta" {{ ($setting->timezone ?? 'Asia/Jakarta') == 'Asia/Jakarta' ? 'selected' : '' }}>Waktu Indonesia Barat (WIB)</option>
@@ -230,6 +239,15 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 <script>
+    function generateKioskPin() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < 6; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('kiosk_pin').value = result;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         flatpickr(".flatpickr-datetime", {
             enableTime: true,

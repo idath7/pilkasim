@@ -10,6 +10,13 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 
 class VoterImport implements ToModel, WithBatchInserts, WithChunkReading
 {
+    protected $type;
+
+    public function __construct($type = 'student')
+    {
+        $this->type = $type;
+    }
+
     public function batchSize(): int
     {
         return 500;
@@ -33,6 +40,7 @@ class VoterImport implements ToModel, WithBatchInserts, WithChunkReading
         $accessCode = isset($row[6]) && trim($row[6]) !== '' ? strtoupper(trim($row[6])) : strtoupper(\Illuminate\Support\Str::random(6));
 
         return new Voter([
+            'type'        => $this->type,
             'nis'         => $row[0] ?? null,
             'name'        => $row[1],
             'class_name'  => $row[2] ?? '-',

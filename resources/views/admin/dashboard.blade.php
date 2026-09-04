@@ -96,7 +96,8 @@
 <div class="dashboard-header animate-fade-in">
     <h2>Dashboard Admin</h2>
     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <a href="{{ route('admin.voters') }}" class="btn btn-secondary"><i class="fa-solid fa-users"></i> Pemilih</a>
+        <a href="{{ route('admin.voters') }}" class="btn btn-secondary"><i class="fa-solid fa-users"></i> Pemilih (Siswa)</a>
+        <a href="{{ route('admin.teachers') }}" class="btn btn-secondary"><i class="fa-solid fa-chalkboard-user"></i> Pemilih (Guru)</a>
         <a href="{{ route('admin.candidates') }}" class="btn btn-secondary"><i class="fa-solid fa-user-tie"></i> Kandidat</a>
         <a href="{{ route('admin.settings') }}" class="btn btn-secondary"><i class="fa-solid fa-gear"></i> Pengaturan</a>
         <a href="{{ route('admin.dashboard') }}" class="btn"><i class="fa-solid fa-rotate-right"></i> Refresh</a>
@@ -140,24 +141,24 @@
     <div class="card stat-card">
         <i class="fa-solid fa-users stat-icon"></i>
         <div>
-            <div class="stat-value">{{ $totalVoters }}</div>
-            <div class="stat-label">Total Pemilih</div>
+            <div class="stat-value">{{ $totalStudentVoters + $totalTeacherVoters }}</div>
+            <div class="stat-label">Total Pemilih ({{ $totalStudentVoters }} Siswa, {{ $totalTeacherVoters }} Guru)</div>
         </div>
     </div>
     
     <div class="card stat-card">
         <i class="fa-solid fa-check-to-slot stat-icon" style="color: var(--secondary)"></i>
         <div>
-            <div class="stat-value">{{ $votedCount }}</div>
-            <div class="stat-label">Sudah Memilih</div>
+            <div class="stat-value">{{ $votedStudentCount + $votedTeacherCount }}</div>
+            <div class="stat-label">Sudah Memilih ({{ $votedStudentCount }} Siswa, {{ $votedTeacherCount }} Guru)</div>
         </div>
     </div>
     
     <div class="card stat-card">
         <i class="fa-solid fa-clock-rotate-left stat-icon" style="color: #F59E0B"></i>
         <div>
-            <div class="stat-value">{{ $unvotedCount }}</div>
-            <div class="stat-label">Belum Memilih</div>
+            <div class="stat-value">{{ $unvotedStudentCount + $unvotedTeacherCount }}</div>
+            <div class="stat-label">Belum Memilih ({{ $unvotedStudentCount }} Siswa, {{ $unvotedTeacherCount }} Guru)</div>
         </div>
     </div>
 </div>

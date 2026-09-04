@@ -26,8 +26,14 @@ Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('adm
 Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 Route::post('/admin/logout', [AuthController::class, 'adminLogout'])->name('admin.logout');
 
+Route::get('/kiosk/login', [AuthController::class, 'showKioskLogin'])->name('kiosk.login');
+Route::post('/kiosk/login', [AuthController::class, 'kioskLogin']);
+
 Route::get('/kiosk', function () {
     $appSetting = \App\Models\Setting::first();
+    if ($appSetting && $appSetting->kiosk_pin && !session()->has('kiosk_authenticated')) {
+        return redirect()->route('kiosk.login');
+    }
     return view('kiosk.index', compact('appSetting'));
 })->name('kiosk');
 
@@ -85,8 +91,15 @@ Route::middleware('auth:admin')->group(function () {
         }
     });
     
-    // Voter Management
+    // Voter Management (Siswa)
     Route::get('/admin/voters', [AdminController::class, 'voters'])->name('admin.voters');
+    
+    // Voter Management (Guru)
+    Route::get('/admin/teachers', [AdminController::class, 'teachers'])->name('admin.teachers');
+
+    // Print Cards
+    Route::get('/admin/voters/print', [AdminController::class, 'printCards'])->name('admin.voters.print');
+
     Route::post('/admin/voters', [AdminController::class, 'storeVoter'])->name('admin.voters.store');
     Route::post('/admin/voters/{id}/reset', [AdminController::class, 'resetVoterStatus'])->name('admin.voters.reset');
     Route::post('/admin/voters/reset-all', [AdminController::class, 'resetAllVoters'])->name('admin.voters.reset_all');

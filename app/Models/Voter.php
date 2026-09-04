@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Voter extends Model
 {
     protected $fillable = [
+        'type',
         'nis',
         'name',
         'class_name',
