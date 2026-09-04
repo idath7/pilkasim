@@ -261,6 +261,7 @@
     <script>
         let qrCodeObj = null;
         let pollInterval = null;
+        let countdownTimer = null;
         let currentToken = null;
 
         function renderQR(url) {
@@ -281,12 +282,13 @@
 
         function fetchToken() {
             clearInterval(pollInterval);
+            clearInterval(countdownTimer);
             fetch('{{ route("kiosk.token") }}')
                 .then(res => res.json())
                 .then(data => {
                     currentToken = data.token;
                     renderQR(data.url);
-                    document.getElementById('timer').innerText = 'Menunggu Scan...';
+                    startCountdown(data.remaining || 30);
                     startPolling();
                 })
                 .catch(err => {
@@ -296,6 +298,22 @@
                 });
         }
 
+        function startCountdown(seconds) {
+            let remaining = seconds;
+            document.getElementById('timer').innerText = remaining + ' Detik';
+            
+            countdownTimer = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(countdownTimer);
+                    document.getElementById('timer').innerText = 'Memperbarui QR...';
+                    fetchToken(); // Auto refresh if not scanned
+                } else {
+                    document.getElementById('timer').innerText = remaining + ' Detik';
+                }
+            }, 1000);
+        }
+
         function startPolling() {
             pollInterval = setInterval(() => {
                 if (!currentToken) return;
@@ -303,6 +321,7 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.status === 'used') {
+                            clearInterval(countdownTimer); // Stop countdown immediately
                             document.getElementById('timer').innerText = 'Memperbarui QR...';
                             fetchToken();
                         }
