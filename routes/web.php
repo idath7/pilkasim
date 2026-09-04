@@ -63,6 +63,17 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
     
+    // Database Migration Route for Shared Hosting
+    Route::get('/admin/run-migrations', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            return response("<pre>Migrasi berhasil dijalankan:\n" . $output . "</pre><br><a href='" . route('admin.dashboard') . "'>Kembali ke Dashboard</a>");
+        } catch (\Exception $e) {
+            return response("<pre>Terjadi kesalahan saat migrasi:\n" . $e->getMessage() . "</pre>");
+        }
+    });
+    
     // Voter Management
     Route::get('/admin/voters', [AdminController::class, 'voters'])->name('admin.voters');
     Route::post('/admin/voters', [AdminController::class, 'storeVoter'])->name('admin.voters.store');
