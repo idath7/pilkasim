@@ -11,7 +11,7 @@ class VoterImport implements ToModel
     public function model(array $row): Model|array|null
     {
         // Skip header row or empty names
-        if ($row[1] == 'Nama' || empty($row[1])) {
+        if ($row[1] === 'Nama Lengkap' || $row[1] === 'Nama' || empty($row[1])) {
             return null;
         }
 
