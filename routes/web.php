@@ -73,6 +73,17 @@ Route::middleware('auth:admin')->group(function () {
             return response("<pre>Terjadi kesalahan saat migrasi:\n" . $e->getMessage() . "</pre>");
         }
     });
+
+    // Storage Link Route for Shared Hosting
+    Route::get('/admin/run-storage-link', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('storage:link');
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            return response("<pre>Storage link berhasil dibuat:\n" . $output . "</pre><br><a href='" . route('admin.dashboard') . "'>Kembali ke Dashboard</a>");
+        } catch (\Exception $e) {
+            return response("<pre>Terjadi kesalahan saat membuat storage link:\n" . $e->getMessage() . "</pre>");
+        }
+    });
     
     // Voter Management
     Route::get('/admin/voters', [AdminController::class, 'voters'])->name('admin.voters');
