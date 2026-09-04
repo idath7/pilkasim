@@ -1,0 +1,175 @@
+@extends('layouts.app')
+
+@section('styles')
+<style>
+    .header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    th {
+        background-color: #F9FAFB;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+    
+    tr:hover {
+        background-color: #F9FAFB;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-voted {
+        background-color: #D1FAE5;
+        color: #065F46;
+    }
+    
+    .status-pending {
+        background-color: #FEF3C7;
+        color: #92400E;
+    }
+    
+    .access-code-box {
+        font-family: monospace;
+        background: #F3F4F6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="header-flex animate-fade-in">
+    <h2>Daftar Pemilih & Kode Akses</h2>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button onclick="document.getElementById('addModal').style.display='block'" class="btn"><i class="fa-solid fa-plus"></i> Tambah</button>
+        <button onclick="document.getElementById('importModal').style.display='block'" class="btn" style="background-color: var(--secondary);"><i class="fa-solid fa-file-excel"></i> Import</button>
+        <form action="{{ route('admin.voters.reset_all') }}" method="POST" onsubmit="return confirm('Peringatan: Seluruh data pemilih akan dihapus! Anda yakin?');" style="display:inline;">
+            @csrf
+            <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Reset Data</button>
+        </form>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+    </div>
+</div>
+
+<div class="card animate-fade-in" style="animation-delay: 0.1s; overflow-x: auto;">
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>NIS</th>
+                <th>Nama Lengkap</th>
+                <th>Kelas</th>
+                <th>L/P</th>
+                <th>Kode Akses</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($voters as $index => $voter)
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $voter->nis ?? '-' }}</td>
+                <td style="font-weight: 500;">{{ $voter->name }}</td>
+                <td>{{ $voter->class_name }}</td>
+                <td>{{ $voter->gender }}</td>
+                <td>
+                    <span class="access-code-box">{{ $voter->access_code }}</span>
+                </td>
+                <td>
+                    @if($voter->has_voted)
+                        <span class="status-badge status-voted"><i class="fa-solid fa-check"></i> Sudah Memilih</span>
+                    @else
+                        <span class="status-badge status-pending"><i class="fa-solid fa-clock"></i> Belum</span>
+                    @endif
+                </td>
+                <td>
+                    <form action="{{ route('admin.voters.reset', $voter->id) }}" method="POST" onsubmit="return confirm('Reset status pemilihan siswa ini?');">
+                        @csrf
+                        <button type="submit" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-rotate-left"></i> Reset Status</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Tambah Manual -->
+<div id="addModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+        <span onclick="document.getElementById('addModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
+        <h3 style="margin-bottom: 1.5rem;">Tambah Pemilih Manual</h3>
+        <form action="{{ route('admin.voters.store') }}" method="POST">
+            @csrf
+            <div class="form-group"><label>NIS</label><input type="text" name="nis"></div>
+            <div class="form-group"><label>Nama Lengkap</label><input type="text" name="name" required></div>
+            <div class="form-group"><label>Kelas</label><input type="text" name="class_name" required></div>
+            <div class="form-group">
+                <label>Jenis Kelamin</label>
+                <select name="gender" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    <option value="L">Laki-laki (L)</option>
+                    <option value="P">Perempuan (P)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Simpan Data</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Upload Excel -->
+<div id="importModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+        <span onclick="document.getElementById('importModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
+        <h3 style="margin-bottom: 1.5rem;">Import Data Excel</h3>
+        
+        <div style="margin-bottom: 1.5rem; padding: 1rem; background: #F3F4F6; border-radius: var(--radius); text-align: center;">
+            <p style="margin-bottom: 0.5rem; font-size: 0.875rem;">Gunakan format template yang telah disediakan sebelum mengunggah.</p>
+            <a href="{{ route('admin.voters.template') }}" class="btn btn-secondary" style="font-size: 0.875rem;"><i class="fa-solid fa-download"></i> Unduh Template</a>
+        </div>
+
+        <form action="{{ route('admin.voters.import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group">
+                <label>Pilih File Excel (.xlsx)</label>
+                <input type="file" name="file" accept=".xlsx, .xls" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Upload & Proses</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('addModal')) {
+            document.getElementById('addModal').style.display = "none";
+        }
+        if (event.target == document.getElementById('importModal')) {
+            document.getElementById('importModal').style.display = "none";
+        }
+    }
+</script>
+@endsection

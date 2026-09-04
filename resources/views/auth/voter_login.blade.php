@@ -1,0 +1,273 @@
+@extends('layouts.app', ['hideNavbar' => true])
+
+@section('styles')
+<style>
+    body {
+        background: linear-gradient(135deg, #1e6e3c 0%, #2f8e52 100%);
+        @if(isset($appSetting) && $appSetting->use_gradient)
+            background: linear-gradient(135deg, {{ $appSetting->theme_color_1 ?? '#2db8a6' }} 0%, {{ $appSetting->theme_color_2 ?? '#1b9282' }} 100%);
+        @else
+            background-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
+        @endif
+        margin: 0;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 1rem;
+    }
+    
+    .login-card {
+        width: 100%;
+        max-width: 480px;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        position: relative;
+        text-align: center;
+    }
+    
+    .back-btn {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #111827;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .back-btn:hover {
+        background-color: #f3f4f6;
+    }
+
+    .login-icon {
+        font-size: 3.5rem;
+        color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }};
+        margin-bottom: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .login-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #111827;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .login-subtitle {
+        color: #6b7280;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+        padding: 0 1rem;
+    }
+    
+    .otp-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+    
+    .otp-input {
+        width: 100%;
+        aspect-ratio: 1;
+        font-size: 2.25rem;
+        font-weight: 700;
+        text-align: center;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        background-color: #f3f4f6;
+        color: #111827;
+        transition: all 0.2s;
+        text-transform: uppercase;
+    }
+    
+    .otp-input:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
+        box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1);
+    }
+    
+    .resend-text {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+    }
+    
+    .resend-link {
+        color: #f59e0b;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        @if(isset($appSetting) && $appSetting->use_gradient)
+            background: linear-gradient(135deg, {{ $appSetting->theme_color_5 ?? '#f59e0b' }} 0%, {{ $appSetting->theme_color_6 ?? '#d97706' }} 100%);
+        @else
+            background-color: {{ $appSetting->theme_color_5 ?? '#f59e0b' }};
+        @endif
+        color: #1e293b;
+        border: none;
+        border-radius: 100px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-submit:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    
+    .hidden-input {
+        display: none;
+    }
+    
+    /* Responsive Adjustments for Mobile */
+    @media (max-width: 480px) {
+        .login-card {
+            padding: 2rem 1rem;
+        }
+        .login-title {
+            font-size: 1.5rem;
+        }
+        .otp-container {
+            gap: 0.25rem;
+        }
+        .otp-input {
+            font-size: 1.5rem;
+            border-radius: 8px;
+        }
+        .login-icon {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="login-container">
+    <div class="login-card animate-fade-in">
+        <!-- Optional Back Button -->
+        <a href="#" class="back-btn" onclick="history.back(); return false;">
+            <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        
+        <i class="fa-solid fa-check-to-slot login-icon"></i>
+        <h1 class="login-title">Verifikasi Kode</h1>
+        <p class="login-subtitle">Masukkan kode verifikasi unik yang diberikan oleh panitia pemilihan.</p>
+        
+        <form action="{{ route('voter.login') }}" method="POST" id="loginForm">
+            @csrf
+            
+            <input type="hidden" name="access_code" id="accessCodeHidden">
+            
+            <div class="otp-container">
+                <input type="text" class="otp-input" maxlength="1" autocomplete="off" autofocus>
+                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+            </div>
+            
+            <div class="resend-text">
+                Belum mendapatkan kode? <br>
+                <a href="#" class="resend-link">Hubungi Panitia</a>
+            </div>
+            
+            <button type="submit" class="btn-submit">Verifikasi</button>
+        </form>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('.otp-input');
+        const hiddenInput = document.getElementById('accessCodeHidden');
+        const form = document.getElementById('loginForm');
+
+        inputs.forEach((input, index) => {
+            // Move to next input on typing
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+                updateHiddenInput();
+            });
+
+            // Move to previous input on backspace
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && e.target.value === '') {
+                    if (index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            });
+            
+            // Handle pasting the full code
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').toUpperCase().trim();
+                
+                if (pastedData.length > 0) {
+                    for (let i = 0; i < inputs.length; i++) {
+                        if (i < pastedData.length) {
+                            inputs[i].value = pastedData[i];
+                        }
+                    }
+                    updateHiddenInput();
+                    
+                    // Focus on the last filled input or the very last input
+                    const focusIndex = Math.min(pastedData.length, inputs.length) - 1;
+                    inputs[focusIndex].focus();
+                }
+            });
+        });
+
+        function updateHiddenInput() {
+            let code = '';
+            inputs.forEach(input => {
+                code += input.value;
+            });
+            hiddenInput.value = code;
+        }
+
+        form.addEventListener('submit', function(e) {
+            updateHiddenInput();
+            if (hiddenInput.value.length < 6) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kode Tidak Lengkap',
+                    text: 'Silakan masukkan 6 digit kode akses Anda.'
+                });
+            }
+        });
+    });
+</script>
+@endsection
