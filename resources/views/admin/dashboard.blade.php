@@ -92,7 +92,40 @@
 
     @media (max-width: 768px) {
         .token-url-row {
-            display: none !important;
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 0.75rem !important;
+        }
+        #dynamic-login-link {
+            font-size: 1rem !important;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .token-actions {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .kiosk-buttons {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr);
+            width: 100%;
+            gap: 0.5rem;
+        }
+        .kiosk-buttons .btn {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.7rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            text-align: center;
+        }
+        .kiosk-buttons .btn i {
+            font-size: 1.25rem;
+            margin: 0;
         }
     }
 </style>
@@ -101,7 +134,10 @@
 @section('content')
 <div class="dashboard-header animate-fade-in">
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-        <h2 style="margin: 0;">Dashboard Admin</h2>
+        <div>
+            <h2 style="margin: 0;">Dashboard Admin</h2>
+            <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">Halo, {{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
+        </div>
         <a href="{{ route('admin.dashboard') }}" class="btn" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-rotate-right"></i> Refresh</a>
     </div>
 </div>
@@ -112,7 +148,7 @@
             <h3 style="margin-top: 0; color: white;">Link Login & Layar Kiosk</h3>
             <p style="opacity: 0.9; margin-bottom: 0;">Gunakan fitur Kiosk untuk menampilkan QR Code di layar besar, atau salin link login langsung jika diperlukan.</p>
         </div>
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+        <div class="kiosk-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
             <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
                 <i class="fa-solid fa-desktop"></i> Buka Kiosk
             </a>
@@ -129,13 +165,15 @@
         <div style="flex: 1; font-family: monospace; font-size: 1.25rem; font-weight: bold; overflow-x: auto; white-space: nowrap;" id="dynamic-login-link">
             Memuat link...
         </div>
-        <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 8px;">
-            <div style="font-size: 1.5rem; font-weight: bold;" id="dynamic-login-timer">30</div>
-            <div style="font-size: 0.75rem;">Detik</div>
+        <div class="token-actions" style="display: flex; align-items: center; gap: 1rem;">
+            <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 8px;">
+                <div style="font-size: 1.5rem; font-weight: bold;" id="dynamic-login-timer">30</div>
+                <div style="font-size: 0.75rem;">Detik</div>
+            </div>
+            <button onclick="copyLoginLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); white-space: nowrap; height: 100%; min-height: 48px;">
+                <i class="fa-solid fa-copy"></i> Salin
+            </button>
         </div>
-        <button onclick="copyLoginLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); white-space: nowrap;">
-            <i class="fa-solid fa-copy"></i> Salin
-        </button>
     </div>
 </div>
 
@@ -230,6 +268,14 @@
             <h4 style="margin: 0; color: var(--text);">Pengaturan Sistem</h4>
             <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Tema, jadwal, dan SEO</p>
         </a>
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-secondary" onclick="showChangePasswordModal()"><i class="fa-solid fa-key"></i> Ganti Password</button>
+        <form action="{{ route('admin.logout') }}" method="POST" style="display:inline;">
+            @csrf
+            <button type="submit" class="btn btn-danger" style="border: none; color: white;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </form>
     </div>
 </div>
 @endsection

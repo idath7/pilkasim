@@ -181,15 +181,6 @@
             <i class="fa-solid fa-check-to-slot"></i> e-Pilkasim
         </a>
         <div>
-            @auth('admin')
-                <span class="mr-4 text-sm" style="margin-right: 15px;">Halo, {{ Auth::guard('admin')->user()->name ?? 'Admin' }}</span>
-                <button type="button" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.875rem; margin-right: 0.5rem;" onclick="showChangePasswordModal()">Ganti Password</button>
-                <form action="{{ route('admin.logout') }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-danger" style="padding: 0.4rem 1rem; font-size: 0.875rem; border: none; color: white;">Logout</button>
-                </form>
-            @endauth
-            
             @if(session('voter_id'))
                 <form action="{{ route('voter.logout') }}" method="POST" style="display:inline;">
                     @csrf
