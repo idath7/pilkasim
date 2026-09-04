@@ -107,7 +107,8 @@ class AdminController extends Controller
     public function candidates()
     {
         $candidates = Candidate::all();
-        return view('admin.candidates', compact('candidates'));
+        $voters = Voter::orderBy('name')->get();
+        return view('admin.candidates', compact('candidates', 'voters'));
     }
 
     public function storeCandidate(Request $request)

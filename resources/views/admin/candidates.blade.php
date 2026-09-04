@@ -119,14 +119,26 @@
         
         <form action="{{ route('admin.candidates.store') }}" method="POST" enctype="multipart/form-data" id="candidateForm">
             @csrf
+            
+            <div class="form-group" style="background: #f9fafb; padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--border);">
+                <label>Pilih dari Data Pemilih (Opsional)</label>
+                <select id="voterSelect" onchange="autofillVoter()" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    <option value="">-- Ketik manual di bawah atau pilih siswa --</option>
+                    @foreach($voters as $voter)
+                        <option value="{{ $voter->name }}|{{ $voter->class_name }}">{{ $voter->name }} ({{ $voter->class_name }})</option>
+                    @endforeach
+                </select>
+                <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Pilih siswa untuk mengisi otomatis Nama dan Kelas di bawah ini.</small>
+            </div>
+            
             <div class="form-group">
                 <label>Nama Calon</label>
-                <input type="text" name="name" required>
+                <input type="text" name="name" id="addName" required>
             </div>
             
             <div class="form-group">
                 <label>Kelas</label>
-                <input type="text" name="class_name" required>
+                <input type="text" name="class_name" id="addClassName" required>
             </div>
             
             <div class="form-group">
@@ -275,6 +287,16 @@
         editMissionEditor.root.innerHTML = atob(missionBase64);
         
         document.getElementById('editCandidateModal').style.display = 'block';
+    }
+
+    function autofillVoter() {
+        var select = document.getElementById('voterSelect');
+        var val = select.value;
+        if(val) {
+            var parts = val.split('|');
+            document.getElementById('addName').value = parts[0];
+            document.getElementById('addClassName').value = parts[1];
+        }
     }
     
     // Close modal when clicking outside
