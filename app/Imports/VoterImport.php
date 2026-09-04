@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 
 class VoterImport implements ToModel
 {
-    public function model(array $row)
+    public function model(array $row): Model|array|null
     {
         // Skip header row or empty names
         if ($row[1] == 'Nama' || empty($row[1])) {
