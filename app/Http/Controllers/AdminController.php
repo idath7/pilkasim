@@ -117,26 +117,21 @@ class AdminController extends Controller
 
     public function storeCandidate(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string',
-            'class_name' => 'required|string',
-            'organization' => 'nullable|string',
-            'vision' => 'required|string',
-            'mission' => 'required|string',
-            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'chairman_name' => 'nullable|string',
+            'vice_chairman_name' => 'nullable|string',
+            'vision' => 'nullable|string',
+            'mission' => 'nullable|string',
+            'order_number' => 'required|integer',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
-        $photoPath = $request->file('photo')->store('candidates', 'public');
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $this->compressImage($request->file('photo'), 'candidates', 800);
+        }
 
-        Candidate::create([
-            'name' => $request->name,
-            'class_name' => $request->class_name,
-            'organization' => $request->organization,
-            'vision' => $request->vision,
-            'mission' => $request->mission,
-            'photo' => '/storage/' . $photoPath,
-            'votes' => 0,
-        ]);
+        Candidate::create($data);
 
         return back()->with('success', 'Kandidat berhasil ditambahkan.');
     }
@@ -145,26 +140,18 @@ class AdminController extends Controller
     {
         $candidate = Candidate::findOrFail($id);
 
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string',
-            'class_name' => 'required|string',
-            'organization' => 'nullable|string',
-            'vision' => 'required|string',
-            'mission' => 'required|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'chairman_name' => 'nullable|string',
+            'vice_chairman_name' => 'nullable|string',
+            'vision' => 'nullable|string',
+            'mission' => 'nullable|string',
+            'order_number' => 'required|integer',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
-        $data = [
-            'name' => $request->name,
-            'class_name' => $request->class_name,
-            'organization' => $request->organization,
-            'vision' => $request->vision,
-            'mission' => $request->mission,
-        ];
-
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('candidates', 'public');
-            $data['photo'] = '/storage/' . $photoPath;
+            $data['photo'] = $this->compressImage($request->file('photo'), 'candidates', 800);
         }
 
         $candidate->update($data);
@@ -216,22 +203,22 @@ class AdminController extends Controller
             'login_method' => 'nullable|string|in:access_code,username_password',
             'voting_start_time' => 'nullable|date',
             'voting_end_time' => 'nullable|date',
-            'osim_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
-            'school_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
-            'main_image' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+            'osim_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:10240',
+            'school_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:10240',
+            'main_image' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:10240',
         ]);
         
         $data['use_gradient'] = $request->has('use_gradient');
 
-        // Handle File Uploads
+        // Handle File Uploads (Auto Compress)
         if ($request->hasFile('osim_logo')) {
-            $data['osim_logo'] = '/storage/' . $request->file('osim_logo')->store('settings', 'public');
+            $data['osim_logo'] = $this->compressImage($request->file('osim_logo'), 'settings', 600);
         }
         if ($request->hasFile('school_logo')) {
-            $data['school_logo'] = '/storage/' . $request->file('school_logo')->store('settings', 'public');
+            $data['school_logo'] = $this->compressImage($request->file('school_logo'), 'settings', 600);
         }
         if ($request->hasFile('main_image')) {
-            $data['main_image'] = '/storage/' . $request->file('main_image')->store('settings', 'public');
+            $data['main_image'] = $this->compressImage($request->file('main_image'), 'settings', 1600);
         }
 
         $setting->update($data);
@@ -249,6 +236,61 @@ class AdminController extends Controller
         $admin->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
         $admin->save();
 
-        return back()->with('success', 'Password admin berhasil diubah.');
+        return back()->with('success', 'Password berhasil diubah.');
+    }
+
+    /**
+     * Helper untuk kompresi dan resize gambar otomatis
+     */
+    private function compressImage($file, $folder, $maxWidth = 1600)
+    {
+        if ($file->getMimeType() == 'image/svg+xml') {
+            return '/storage/' . $file->store($folder, 'public');
+        }
+
+        $filename = \Illuminate\Support\Str::random(40) . '.jpg';
+        $path = storage_path('app/public/' . $folder);
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+        $fullPath = $path . '/' . $filename;
+        
+        $mime = $file->getMimeType();
+        $image = null;
+
+        if ($mime == 'image/jpeg') {
+            $image = @imagecreatefromjpeg($file->getRealPath());
+        } elseif ($mime == 'image/png') {
+            $image = @imagecreatefrompng($file->getRealPath());
+        } elseif ($mime == 'image/webp') {
+            $image = @imagecreatefromwebp($file->getRealPath());
+        }
+
+        if (!$image) {
+            return '/storage/' . $file->store($folder, 'public');
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        if ($width > $maxWidth) {
+            $newWidth = $maxWidth;
+            $newHeight = floor($height * ($maxWidth / $width));
+            
+            $tmpImage = imagecreatetruecolor($newWidth, $newHeight);
+            
+            // Handle transparency to white
+            $white = imagecolorallocate($tmpImage, 255, 255, 255);
+            imagefill($tmpImage, 0, 0, $white);
+            
+            imagecopyresampled($tmpImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagedestroy($image);
+            $image = $tmpImage;
+        }
+
+        imagejpeg($image, $fullPath, 75); // Compress quality 75%
+        imagedestroy($image);
+
+        return '/storage/' . $folder . '/' . $filename;
     }
 }
