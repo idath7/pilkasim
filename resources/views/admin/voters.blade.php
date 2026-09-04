@@ -137,7 +137,11 @@
                     <option value="P">Perempuan (P)</option>
                 </select>
             </div>
-            <div style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1rem;">Opsi Akun (Untuk Login Username & Password)</div>
+            <div style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1rem;">Opsi Login</div>
+            <div class="form-group">
+                <label>Kode Akses (Opsional)</label>
+                <input type="text" name="access_code" placeholder="Kosongkan untuk generate otomatis">
+            </div>
             <div class="form-group">
                 <label>Username (Opsional)</label>
                 <input type="text" name="username" placeholder="Kosongkan jika tidak dipakai">

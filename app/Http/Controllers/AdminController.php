@@ -38,6 +38,7 @@ class AdminController extends Controller
             'name' => 'required|string',
             'class_name' => 'required|string',
             'gender' => 'required|string|in:L,P',
+            'access_code' => 'nullable|string|unique:voters,access_code',
             'username' => 'nullable|string|unique:voters,username',
             'password' => 'nullable|string|min:4',
         ]);
@@ -47,7 +48,7 @@ class AdminController extends Controller
             'name' => $request->name,
             'class_name' => $request->class_name,
             'gender' => $request->gender,
-            'access_code' => strtoupper(Str::random(6)),
+            'access_code' => $request->filled('access_code') ? strtoupper($request->access_code) : strtoupper(Str::random(6)),
             'has_voted' => false,
         ];
 

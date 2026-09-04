@@ -18,12 +18,14 @@ class VoterImport implements ToModel
         $username = isset($row[4]) && trim($row[4]) !== '' ? trim($row[4]) : null;
         $password = isset($row[5]) && trim($row[5]) !== '' ? \Illuminate\Support\Facades\Hash::make(trim($row[5])) : null;
 
+        $accessCode = isset($row[6]) && trim($row[6]) !== '' ? strtoupper(trim($row[6])) : strtoupper(\Illuminate\Support\Str::random(6));
+
         return new Voter([
             'nis'         => $row[0] ?? null,
             'name'        => $row[1],
             'class_name'  => $row[2] ?? '-',
             'gender'      => strtoupper($row[3] ?? 'L'),
-            'access_code' => strtoupper(\Illuminate\Support\Str::random(6)),
+            'access_code' => $accessCode,
             'username'    => $username,
             'password'    => $password,
             'has_voted'   => false,
