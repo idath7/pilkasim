@@ -6,7 +6,20 @@
     <title>Scanner | e-Pilkasim</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting && $faviconSetting->logo_osim)
-        <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/x-icon">
+        <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/png">
+    @endif
+    @if(isset($appSetting) && is_array($appSetting->dynamic_color_tags))
+    <style>
+        @foreach($appSetting->dynamic_color_tags as $tagData)
+            @if(!empty($tagData['tag']))
+            .{{ $tagData['tag'] }} { 
+                background-color: {{ $tagData['bg_color'] ?? 'transparent' }} !important; 
+                color: {{ $tagData['text_color'] ?? 'inherit' }} !important; 
+            }
+            .text-{{ $tagData['tag'] }} { color: {{ $tagData['text_color'] ?? 'inherit' }} !important; }
+            @endif
+        @endforeach
+    </style>
     @endif
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

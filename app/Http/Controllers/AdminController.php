@@ -264,7 +264,20 @@ class AdminController extends Controller
             'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string|max:255',
             'seo_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'dynamic_color_tags' => 'nullable|array',
+            'dynamic_color_tags.*.tag' => 'required_with:dynamic_color_tags|string',
+            'dynamic_color_tags.*.bg_color' => 'nullable|string',
+            'dynamic_color_tags.*.text_color' => 'nullable|string',
         ]);
+        
+        // Ensure dynamic_color_tags are cleaned up (empty items removed)
+        if (isset($data['dynamic_color_tags'])) {
+            $data['dynamic_color_tags'] = array_values(array_filter($data['dynamic_color_tags'], function($item) {
+                return !empty($item['tag']);
+            }));
+        } else {
+            $data['dynamic_color_tags'] = []; // Clear them if not sent
+        }
         
         $data['use_gradient'] = $request->has('use_gradient');
 

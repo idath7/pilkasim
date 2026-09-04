@@ -259,6 +259,39 @@
             </div>
         </div>
         
+        <!-- Fitur Tag Warna Dinamis -->
+        <div class="form-section">
+            <div class="form-section-title" style="color: #F59E0B;"><i class="fa-solid fa-tags"></i> Tag Warna Dinamis (Custom)</div>
+            <p style="font-size: 0.9rem; color: #555; margin-bottom: 1.5rem;">Tentukan warna kustom untuk elemen spesifik (tag) tanpa mengubah kode sumber. Cukup ketik nama "Tag" (misal: <code>login-pemilih</code> atau <code>akses-kode</code>).</p>
+            
+            <div id="dynamic-tags-container">
+                @php $tags = is_array($setting->dynamic_color_tags) ? $setting->dynamic_color_tags : []; @endphp
+                @if(count($tags) > 0)
+                    @foreach($tags as $index => $tagData)
+                    <div class="dynamic-tag-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-end; background: #F9FAFB; padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border);">
+                        <div style="flex: 2;">
+                            <label style="font-size: 0.85rem;">Kata Kunci / Nama Tag</label>
+                            <input type="text" name="dynamic_color_tags[{{$index}}][tag]" value="{{ $tagData['tag'] ?? '' }}" placeholder="Misal: login-pemilih" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.85rem;">Warna Latar</label>
+                            <input type="color" name="dynamic_color_tags[{{$index}}][bg_color]" value="{{ $tagData['bg_color'] ?? '#ffffff' }}" style="width: 100%; height: 38px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; padding: 2px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.85rem;">Warna Teks</label>
+                            <input type="color" name="dynamic_color_tags[{{$index}}][text_color]" value="{{ $tagData['text_color'] ?? '#000000' }}" style="width: 100%; height: 38px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; padding: 2px;">
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-danger" onclick="this.closest('.dynamic-tag-row').remove()" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    @endforeach
+                @endif
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="addDynamicTagRow()" style="margin-top: 0.5rem; background: white;"><i class="fa-solid fa-plus"></i> Tambah Tag Warna</button>
+        </div>
+        
         <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-save"></i> Simpan Pengaturan</button>
     </form>
 
@@ -278,6 +311,34 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 <script>
+    let tagIndex = {{ is_array($setting->dynamic_color_tags) ? count($setting->dynamic_color_tags) : 0 }};
+    function addDynamicTagRow() {
+        const container = document.getElementById('dynamic-tags-container');
+        const row = document.createElement('div');
+        row.className = 'dynamic-tag-row';
+        row.style.cssText = 'display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-end; background: #F9FAFB; padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border);';
+        
+        row.innerHTML = `
+            <div style="flex: 2;">
+                <label style="font-size: 0.85rem;">Kata Kunci / Nama Tag</label>
+                <input type="text" name="dynamic_color_tags[${tagIndex}][tag]" placeholder="Misal: login-pemilih" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+            </div>
+            <div style="flex: 1;">
+                <label style="font-size: 0.85rem;">Warna Latar</label>
+                <input type="color" name="dynamic_color_tags[${tagIndex}][bg_color]" value="#ffffff" style="width: 100%; height: 38px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; padding: 2px;">
+            </div>
+            <div style="flex: 1;">
+                <label style="font-size: 0.85rem;">Warna Teks</label>
+                <input type="color" name="dynamic_color_tags[${tagIndex}][text_color]" value="#000000" style="width: 100%; height: 38px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; padding: 2px;">
+            </div>
+            <div>
+                <button type="button" class="btn btn-danger" onclick="this.closest('.dynamic-tag-row').remove()" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+        container.appendChild(row);
+        tagIndex++;
+    }
+
     function generateKioskPin() {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let result = '';

@@ -28,11 +28,13 @@ class Setting extends Model
         'seo_title',
         'seo_description',
         'seo_image',
+        'dynamic_color_tags',
     ];
 
     protected $casts = [
         'voting_start_time' => 'datetime',
         'voting_end_time' => 'datetime',
+        'dynamic_color_tags' => 'array',
     ];
 
     /**

@@ -7,7 +7,7 @@
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting)
         @if($faviconSetting->logo_osim)
-            <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/x-icon">
+            <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/png">
         @endif
         @if($faviconSetting->seo_title || $faviconSetting->seo_description)
             <meta name="description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
@@ -22,6 +22,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if(isset($faviconSetting) && is_array($faviconSetting->dynamic_color_tags))
+    <style>
+        @foreach($faviconSetting->dynamic_color_tags as $tagData)
+            @if(!empty($tagData['tag']))
+            .{{ $tagData['tag'] }} { 
+                background-color: {{ $tagData['bg_color'] ?? 'transparent' }} !important; 
+                color: {{ $tagData['text_color'] ?? 'inherit' }} !important; 
+            }
+            .text-{{ $tagData['tag'] }} { color: {{ $tagData['text_color'] ?? 'inherit' }} !important; }
+            @endif
+        @endforeach
+    </style>
+    @endif
     <style>
         :root {
             --primary: #4F46E5;

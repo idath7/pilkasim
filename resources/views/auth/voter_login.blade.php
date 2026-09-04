@@ -202,13 +202,13 @@
 
 @section('content')
 <div class="login-container">
-    <div class="login-card animate-fade-in">
+    <div class="login-card animate-fade-in tag-login-pemilih">
         <!-- Optional Back Button -->
         <a href="#" class="back-btn" onclick="history.back(); return false;">
             <i class="fa-solid fa-chevron-left"></i>
         </a>
         
-        <i class="fa-solid fa-check-to-slot login-icon"></i>
+        <i class="fa-solid fa-check-to-slot login-icon tag-logo-icon"></i>
 
         @php
             $loginMethod = $appSetting->login_method ?? 'access_code';
@@ -229,7 +229,7 @@
                     <input type="password" name="password" class="form-input" required>
                 </div>
                 
-                <button type="submit" class="btn-submit">Masuk</button>
+                <button type="submit" class="btn-submit tag-akses-kode">Masuk</button>
             </form>
         @else
             <h1 class="login-title">Verifikasi Kode</h1>
@@ -252,12 +252,9 @@
                     <input type="text" class="otp-input" maxlength="1" autocomplete="off">
                 </div>
                 
-                <div class="resend-text">
-                    Belum mendapatkan kode? <br>
-                    <a href="#" class="resend-link">Hubungi Panitia</a>
-                </div>
+                <p class="resend-text">Kesulitan login? <a href="#" class="resend-link tag-logo-icon">Hubungi Panitia</a></p>
                 
-                <button type="submit" class="btn-submit">Verifikasi</button>
+                <button type="submit" class="btn-submit tag-akses-kode" id="btnSubmitOTP" disabled>Verifikasi & Masuk</button>
             </form>
         @endif
     </div>

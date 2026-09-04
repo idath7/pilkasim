@@ -17,11 +17,13 @@ class CheckUserAgent
     {
         $providedToken = $request->query('token');
 
-        // Check if the provided token is in cache and pending
         if ($request->isMethod('get') && $providedToken) {
             $status = \Illuminate\Support\Facades\Cache::get('kiosk_token_' . $providedToken);
-            if ($status === 'pending') {
-                \Illuminate\Support\Facades\Cache::put('kiosk_token_' . $providedToken, 'used', now()->addMinutes(60));
+            // Allow both 'pending' and 'used' to fix QR scanner background pre-fetch issues (like iOS Camera).
+            if ($status === 'pending' || $status === 'used') {
+                if ($status === 'pending') {
+                    \Illuminate\Support\Facades\Cache::put('kiosk_token_' . $providedToken, 'used', now()->addMinutes(60));
+                }
                 session(['has_valid_dynamic_token' => true]);
             }
         }
