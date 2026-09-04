@@ -89,6 +89,12 @@
         border-radius: 4px;
         transition: width 1s ease-in-out;
     }
+
+    @media (max-width: 768px) {
+        .token-url-row {
+            display: none !important;
+        }
+    }
 </style>
 @endsection
 
@@ -107,7 +113,7 @@
             <p style="opacity: 0.9; margin-bottom: 0;">Gunakan fitur Kiosk untuk menampilkan QR Code di layar besar, atau salin link login langsung jika diperlukan.</p>
         </div>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
-            <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: white; color: var(--primary); border: none;">
+            <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
                 <i class="fa-solid fa-desktop"></i> Buka Kiosk
             </a>
             <button onclick="document.getElementById('qrModal').style.display='block'" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
@@ -119,7 +125,7 @@
         </div>
     </div>
     
-    <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+    <div class="token-url-row" style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
         <div style="flex: 1; font-family: monospace; font-size: 1.25rem; font-weight: bold; overflow-x: auto; white-space: nowrap;" id="dynamic-login-link">
             Memuat link...
         </div>
@@ -127,7 +133,7 @@
             <div style="font-size: 1.5rem; font-weight: bold;" id="dynamic-login-timer">30</div>
             <div style="font-size: 0.75rem;">Detik</div>
         </div>
-        <button onclick="copyLoginLink()" class="btn btn-secondary" style="background: white; color: var(--primary); border: none; white-space: nowrap;">
+        <button onclick="copyLoginLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); white-space: nowrap;">
             <i class="fa-solid fa-copy"></i> Salin
         </button>
     </div>
