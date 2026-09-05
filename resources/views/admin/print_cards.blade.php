@@ -2,7 +2,7 @@
 <html>
 <head>
   <base target="_top">
-  <title>Cetak Kartu Pemilih - e-Pilkasim</title>
+  <title>Cetak Kartu Pemilih - {{ $appSetting->app_name ?? 'E-Pilketos' }}</title>
   @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
   @if($faviconSetting && $faviconSetting->osim_logo)
       <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/x-icon">

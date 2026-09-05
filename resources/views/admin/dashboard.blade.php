@@ -50,27 +50,34 @@
     
     .result-card {
         display: flex;
-        align-items: center;
-        padding: 1.5rem;
-        gap: 1.5rem;
+        align-items: stretch;
+        padding: 0;
+        gap: 0;
+        overflow: hidden;
     }
     
     .result-photo {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
+        width: 100px;
+        min-height: 100px;
+        height: auto;
+        border-radius: 12px 0 0 12px;
         object-fit: cover;
         object-position: top center;
-        background-color: #E5E7EB;
+        background-color: var(--surface);
+        padding: 2px;
     }
     
     .result-info {
         flex: 1;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     
     .result-name {
         font-weight: 700;
-        font-size: 1.125rem;
+        font-size: 0.95rem;
         margin-bottom: 0.25rem;
     }
     
@@ -103,6 +110,10 @@
             flex-direction: column;
             align-items: stretch !important;
             gap: 0.75rem !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-top: 1rem !important;
+            padding-top: 1rem !important;
         }
         #dynamic-login-link {
             font-size: 0.75rem !important;
@@ -141,11 +152,21 @@
 
 @section('content')
 <div class="card animate-fade-in dashboard-admin-card" style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;">
+    @php
+        $setting = \App\Models\Setting::first();
+        $showKiosk = auth('admin')->user()->role !== 'pembina' && ($setting->login_method ?? 'access_code') !== 'username_password';
+    @endphp
+
     <!-- Dashboard Header -->
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
         <div>
-            <h2 class="dashboard-admin-title" style="margin: 0; color: white;">Dashboard Admin</h2>
-            <p class="dashboard-admin-subtitle" style="margin: 0.25rem 0 0 0; color: rgba(255, 255, 255, 0.9);">Halo, {{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <h2 class="dashboard-admin-title" style="margin: 0; color: white;">Dashboard Admin</h2>
+                @if(!empty($setting->period))
+                    <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.3); white-space: nowrap;">Periode {{ $setting->period }}</span>
+                @endif
+            </div>
+            <p class="dashboard-admin-subtitle" style="margin: 0.5rem 0 0 0; color: rgba(255, 255, 255, 0.9);">Halo, {{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
         </div>
         <a href="{{ route('admin.dashboard') }}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 60px; line-height: 1; padding: 0; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">
             <div style="font-size: 1.1rem; margin-bottom: 4px;"><i class="fa-solid fa-rotate-right"></i></div>
@@ -153,7 +174,7 @@
         </a>
     </div>
 
-    @if(auth('admin')->user()->role !== 'pembina')
+    @if($showKiosk)
     <!-- Kiosk Section -->
     <div style="margin-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
@@ -162,13 +183,13 @@
                 <p style="opacity: 0.9; margin-bottom: 0;">Gunakan fitur Kiosk untuk menampilkan QR Code di layar besar, atau salin link login langsung jika diperlukan.</p>
             </div>
             <div class="kiosk-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
-                <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
+                <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); font-size: 0.75rem; padding: 0.4rem 0.75rem; border-radius: 4px;">
                     <i class="fa-solid fa-desktop"></i> Buka Kiosk
                 </a>
-                <button onclick="document.getElementById('qrModal').style.display='block'" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
+                <button onclick="document.getElementById('qrModal').style.display='block'" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); font-size: 0.75rem; padding: 0.4rem 0.75rem; border-radius: 4px;">
                     <i class="fa-solid fa-qrcode"></i> QR Website
                 </button>
-                <button onclick="copyKioskLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
+                <button onclick="copyKioskLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); font-size: 0.75rem; padding: 0.4rem 0.75rem; border-radius: 4px;">
                     <i class="fa-solid fa-link"></i> Salin Kiosk
                 </button>
             </div>
@@ -325,6 +346,11 @@
         <div style="font-family: monospace; font-size: 1rem; font-weight: bold; word-break: break-all; background: #f3f4f6; padding: 0.75rem; border-radius: var(--radius);">
             {{ url('/') }}
         </div>
+        
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
+            <button onclick="downloadQR()" class="btn btn-secondary" style="flex: 1; background: transparent; border: 1px dashed var(--border); color: var(--text-muted); padding: 0.5rem 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.02)'; this.style.borderColor='var(--text-muted)';" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)';"><i class="fa-solid fa-download"></i> Unduh</button>
+            <a href="{{ url('/') }}" target="_blank" class="btn" style="flex: 1; background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 0.5rem 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 4px; text-decoration: none; transition: all 0.2s; box-shadow: none;" onmouseover="this.style.backgroundColor='rgba(79, 70, 229, 0.05)'" onmouseout="this.style.backgroundColor='transparent'"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Web</a>
+        </div>
     </div>
 </div>
 
@@ -373,6 +399,27 @@
         const kioskUrl = '{{ route("kiosk") }}';
         navigator.clipboard.writeText(kioskUrl);
         alert('URL Kiosk berhasil disalin: ' + kioskUrl);
+    }
+    
+    function downloadQR() {
+        const qrCanvas = document.querySelector('#dashboard-qr canvas');
+        if (qrCanvas) {
+            const link = document.createElement('a');
+            link.download = 'QR-ePilkasim.png';
+            link.href = qrCanvas.toDataURL();
+            link.click();
+        } else {
+            // Jika canvas tidak ada (beberapa library pakai img)
+            const qrImg = document.querySelector('#dashboard-qr img');
+            if (qrImg && qrImg.src) {
+                const link = document.createElement('a');
+                link.download = 'QR-ePilkasim.png';
+                link.href = qrImg.src;
+                link.click();
+            } else {
+                alert('Gagal mengunduh QR Code.');
+            }
+        }
     }
 
     document.addEventListener("DOMContentLoaded", function() {

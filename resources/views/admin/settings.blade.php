@@ -8,29 +8,7 @@
         align-items: center;
         margin-bottom: 2rem;
     }
-    
-    .settings-container {
-        display: flex;
-        gap: 2rem;
-        align-items: flex-start;
-    }
 
-    .settings-sidebar {
-        width: 280px;
-        flex-shrink: 0;
-        background: var(--surface);
-        border-radius: var(--radius);
-        padding: 1rem;
-        box-shadow: var(--shadow);
-    }
-
-    .settings-content {
-        flex: 1;
-        background: var(--surface);
-        border-radius: var(--radius);
-        padding: 2.5rem;
-        box-shadow: var(--shadow);
-    }
 
     .tab-button {
         display: flex;
@@ -77,44 +55,25 @@
     }
 
     .form-section-title {
-        font-size: 1.5rem;
+        font-size: 1.15rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
         color: var(--text-main);
     }
     
     .form-section-subtitle {
         color: var(--text-muted);
         margin-bottom: 2rem;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
 
     .form-group {
         margin-bottom: 1.5rem;
     }
     
-    .form-group label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: var(--text-main);
-    }
+
     
-    .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        font-family: inherit;
-        background: #F9FAFB;
-        transition: all 0.2s;
-    }
-    
-    .form-control:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        background: var(--surface);
-    }
+    /* form-control diwariskan dari app.blade.php (minimalis garis bawah) */
 
     .color-picker-grid {
         display: grid;
@@ -157,16 +116,19 @@
         accent-color: var(--primary);
     }
     
+    .form-group label,
+    .toggle-wrapper label,
+    .dynamic-tag-row label {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+    }
+    
     @media (max-width: 768px) {
-        .settings-container {
-            flex-direction: column;
-        }
-        .settings-sidebar {
-            width: 100%;
-            display: flex;
-            overflow-x: auto;
-            padding: 0.5rem;
-        }
         .tab-button {
             width: auto;
             white-space: nowrap;
@@ -182,22 +144,22 @@
 <div class="header-flex animate-fade-in">
     <div>
         <h2 style="margin: 0;">Pengaturan Sistem</h2>
-        <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">Konfigurasi utama aplikasi e-Pilkasim</p>
+        <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">Konfigurasi utama aplikasi {{ $setting->app_name ?? 'E-Pilketos' }}</p>
     </div>
-    <div style="display: flex; gap: 1rem;">
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
         <form action="{{ route('admin.optimize') }}" method="POST" style="margin: 0;">
             @csrf
-            <button type="submit" class="btn btn-secondary" title="Bersihkan Cache & Optimalkan">
-                <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i>
+            <button type="submit" class="btn" style="background: transparent; border: 1px solid #F59E0B; color: #F59E0B; padding: 0.5rem 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 4px; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;" onmouseover="this.style.backgroundColor='rgba(245, 158, 11, 0.05)'" onmouseout="this.style.backgroundColor='transparent'" title="Bersihkan Cache & Optimalkan">
+                <i class="fa-solid fa-bolt"></i> Bersihkan Cache
             </button>
         </form>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary" style="background-color: transparent; color: var(--text-muted); border: 1px solid transparent; transition: all 0.2s; font-weight: 500; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.85rem;" onmouseover="this.style.backgroundColor='#f1f5f9'; this.style.color='var(--text-main)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-muted)'"><i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i> Kembali</a>
     </div>
 </div>
 
-<div class="settings-container animate-fade-in" style="animation-delay: 0.1s;">
+<div class="page-container animate-fade-in" style="animation-delay: 0.1s;">
     <!-- Sidebar Menu -->
-    <div class="settings-sidebar">
+    <div class="page-sidebar">
         <button class="tab-button active" onclick="openTab(event, 'tab-umum')">
             <i class="fa-solid fa-info-circle"></i> Informasi Umum
         </button>
@@ -222,7 +184,7 @@
     </div>
 
     <!-- Content Area -->
-    <div class="settings-content">
+    <div class="page-content">
         <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" id="settingsForm">
             @csrf
             
@@ -232,8 +194,33 @@
                 <div class="form-section-subtitle">Sesuaikan detail identitas sekolah dan instruksi pada halaman depan.</div>
                 
                 <div class="form-group">
+                    <label>Nama Aplikasi</label>
+                    <input type="text" name="app_name" class="form-control" value="{{ $setting->app_name ?? 'E-Pilketos' }}" placeholder="Contoh: E-Pilketos">
+                </div>
+                
+                <div class="form-group">
                     <label>Nama Sekolah / Instansi</label>
                     <input type="text" name="school_name" class="form-control" value="{{ $setting->school_name }}" placeholder="Contoh: SMA Negeri 1 Jakarta">
+                </div>
+                
+                <div class="form-group">
+                    <label>Periode / Masa Bakti</label>
+                    <input type="text" name="period" class="form-control" value="{{ $setting->period }}" placeholder="Contoh: 2026/2027">
+                </div>
+                
+                <div class="form-group">
+                    <label>Kostomisasi Judul Header</label>
+                    <input type="text" name="header_title" class="form-control" value="{{ $setting->header_title ?? 'LOGIN HAK PILIH' }}" placeholder="LOGIN HAK PILIH">
+                </div>
+                
+                <div class="form-group">
+                    <label>Kostomisasi Judul Pemilihan</label>
+                    <input type="text" name="election_title" class="form-control" value="{{ $setting->election_title ?? 'Pemilihan Ketua OSIS' }}" placeholder="Pemilihan Ketua OSIS">
+                </div>
+                
+                <div class="form-group">
+                    <label>Running Text (Layar Kiosk)</label>
+                    <textarea name="running_text" class="form-control" rows="3" placeholder="Selamat Datang di Pemilihan Ketua OSIM. Gunakan hak suara Anda dengan jujur, adil, bebas, dan rahasia!">{{ $setting->running_text }}</textarea>
                 </div>
                 
                 <div class="form-group">
@@ -267,7 +254,7 @@
                 </div>
 
                 <div style="padding: 1.5rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; margin-top: 1rem;">
-                    <h4 style="margin-top: 0; color: #0F172A;"><i class="fa-solid fa-desktop" style="margin-right: 0.5rem; color: var(--primary);"></i> Pengaturan Kiosk (Layar Monitor)</h4>
+                    <h4 style="margin-top: 0; color: #0F172A; font-size: 1rem;"><i class="fa-solid fa-desktop" style="margin-right: 0.5rem; color: var(--primary);"></i> Pengaturan Kiosk (Layar Monitor)</h4>
                     <div class="form-group" style="margin-top: 1rem;">
                         <label>PIN/Token Kunci Kiosk (6 Karakter)</label>
                         <div style="display: flex; gap: 0.5rem;">
@@ -293,7 +280,7 @@
                     <div class="form-group">
                         <label>Waktu Buka / Mulai</label>
                         <div style="position: relative;">
-                            <i class="fa-solid fa-calendar-check" style="position: absolute; left: 1rem; top: 1rem; color: var(--primary);"></i>
+                            <i class="fa-solid fa-calendar-check" style="position: absolute; left: 0.5rem; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
                             <input type="text" class="flatpickr-datetime form-control" name="voting_start_time" value="{{ $setting->voting_start_time ? $setting->voting_start_time->format('Y-m-d H:i') : '' }}" style="padding-left: 2.5rem;" placeholder="Pilih tanggal & jam">
                         </div>
                         <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Kosongkan jika sistem ingin langsung dibuka sekarang.</small>
@@ -302,7 +289,7 @@
                     <div class="form-group">
                         <label>Waktu Tutup / Selesai</label>
                         <div style="position: relative;">
-                            <i class="fa-solid fa-calendar-xmark" style="position: absolute; left: 1rem; top: 1rem; color: #EF4444;"></i>
+                            <i class="fa-solid fa-calendar-xmark" style="position: absolute; left: 0.5rem; top: 50%; transform: translateY(-50%); color: #EF4444;"></i>
                             <input type="text" class="flatpickr-datetime form-control" name="voting_end_time" value="{{ $setting->voting_end_time ? $setting->voting_end_time->format('Y-m-d H:i') : '' }}" style="padding-left: 2.5rem;" placeholder="Pilih tanggal & jam">
                         </div>
                         <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Kosongkan jika tidak ada batasan waktu penutupan otomatis.</small>
@@ -323,27 +310,51 @@
                 <div class="color-picker-grid">
                     <div class="form-group">
                         <label>Warna 1 (Utama)</label>
-                        <input type="color" name="theme_color_1" value="{{ $setting->theme_color_1 }}" class="color-input">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="{{ $setting->theme_color_1 ?? '#4F46E5' }}" oninput="this.nextElementSibling.value = this.value">
+                            <input type="text" name="theme_color_1" value="{{ $setting->theme_color_1 ?? '#4F46E5' }}" class="form-control" placeholder="#HEX" oninput="this.previousElementSibling.value = this.value">
+                            <button type="button" class="btn btn-secondary" onclick="resetThemeColor(this, '#4F46E5')" style="padding: 0 0.75rem; height: 42px; border-radius: 4px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted);" title="Reset ke default"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Warna 2 (Gradien)</label>
-                        <input type="color" name="theme_color_2" value="{{ $setting->theme_color_2 }}" class="color-input">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="{{ $setting->theme_color_2 ?? '#4338CA' }}" oninput="this.nextElementSibling.value = this.value">
+                            <input type="text" name="theme_color_2" value="{{ $setting->theme_color_2 ?? '#4338CA' }}" class="form-control" placeholder="#HEX" oninput="this.previousElementSibling.value = this.value">
+                            <button type="button" class="btn btn-secondary" onclick="resetThemeColor(this, '#4338CA')" style="padding: 0 0.75rem; height: 42px; border-radius: 4px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted);" title="Reset ke default"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Warna 3 (Aksen)</label>
-                        <input type="color" name="theme_color_3" value="{{ $setting->theme_color_3 }}" class="color-input">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="{{ $setting->theme_color_3 ?? '#10B981' }}" oninput="this.nextElementSibling.value = this.value">
+                            <input type="text" name="theme_color_3" value="{{ $setting->theme_color_3 ?? '#10B981' }}" class="form-control" placeholder="#HEX" oninput="this.previousElementSibling.value = this.value">
+                            <button type="button" class="btn btn-secondary" onclick="resetThemeColor(this, '#10B981')" style="padding: 0 0.75rem; height: 42px; border-radius: 4px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted);" title="Reset ke default"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Warna 4 (Teks/Lainnya)</label>
-                        <input type="color" name="theme_color_4" value="{{ $setting->theme_color_4 }}" class="color-input">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="{{ $setting->theme_color_4 ?? '#111827' }}" oninput="this.nextElementSibling.value = this.value">
+                            <input type="text" name="theme_color_4" value="{{ $setting->theme_color_4 ?? '#111827' }}" class="form-control" placeholder="#HEX" oninput="this.previousElementSibling.value = this.value">
+                            <button type="button" class="btn btn-secondary" onclick="resetThemeColor(this, '#111827')" style="padding: 0 0.75rem; height: 42px; border-radius: 4px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted);" title="Reset ke default"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Warna 5 (Tombol 1)</label>
-                        <input type="color" name="theme_color_5" value="{{ $setting->theme_color_5 ?? '#f59e0b' }}" class="color-input">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="{{ $setting->theme_color_5 ?? '#f59e0b' }}" oninput="this.nextElementSibling.value = this.value">
+                            <input type="text" name="theme_color_5" value="{{ $setting->theme_color_5 ?? '#f59e0b' }}" class="form-control" placeholder="#HEX" oninput="this.previousElementSibling.value = this.value">
+                            <button type="button" class="btn btn-secondary" onclick="resetThemeColor(this, '#f59e0b')" style="padding: 0 0.75rem; height: 42px; border-radius: 4px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted);" title="Reset ke default"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Warna 6 (Tombol 2)</label>
-                        <input type="color" name="theme_color_6" value="{{ $setting->theme_color_6 ?? '#d97706' }}" class="color-input">
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="{{ $setting->theme_color_6 ?? '#d97706' }}" oninput="this.nextElementSibling.value = this.value">
+                            <input type="text" name="theme_color_6" value="{{ $setting->theme_color_6 ?? '#d97706' }}" class="form-control" placeholder="#HEX" oninput="this.previousElementSibling.value = this.value">
+                            <button type="button" class="btn btn-secondary" onclick="resetThemeColor(this, '#d97706')" style="padding: 0 0.75rem; height: 42px; border-radius: 4px; border: 1px dashed var(--border); background: transparent; color: var(--text-muted);" title="Reset ke default"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -414,11 +425,11 @@
                         @foreach($tags as $index => $tagData)
                         <div class="dynamic-tag-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-end; background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
                             <div style="flex: 2;">
-                                <label style="font-size: 0.85rem;">Kata Kunci / Nama CSS Class</label>
+                                <label>Kata Kunci / Nama CSS Class</label>
                                 <input type="text" name="dynamic_color_tags[{{$index}}][tag]" value="{{ $tagData['tag'] ?? '' }}" placeholder="Misal: btn-custom" class="form-control">
                             </div>
                             <div style="flex: 2;" class="bg-container-parent">
-                                <label style="font-size: 0.85rem; display: flex; justify-content: space-between;">
+                                <label style="display: flex; justify-content: space-between;">
                                     Warna Latar (BG)
                                     <span style="font-weight: normal; font-size: 0.75rem;">
                                         <input type="checkbox" name="dynamic_color_tags[{{$index}}][is_gradient]" value="1" {{ !empty($tagData['is_gradient']) ? 'checked' : '' }} onchange="this.closest('.bg-container-parent').querySelector('.gradient-options').style.display = this.checked ? 'flex' : 'none'"> Gradien
@@ -436,7 +447,7 @@
                                 </div>
                             </div>
                             <div style="flex: 2;">
-                                <label style="font-size: 0.85rem;">Warna Teks</label>
+                                <label>Warna Teks</label>
                                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                                     <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="{{ (isset($tagData['text_color']) && preg_match('/^#[a-f0-9]{6,8}$/i', $tagData['text_color'])) ? substr($tagData['text_color'], 0, 7) : '#000000' }}" oninput="updateOpacityWithHex(this)">
                                     <input type="range" min="0" max="100" value="{{ (isset($tagData['text_color']) && preg_match('/^#[a-f0-9]{8}$/i', $tagData['text_color'])) ? round((hexdec(substr($tagData['text_color'], 7, 2)) / 255) * 100) : 100 }}" style="width: 60px; flex-shrink: 0;" title="Opasitas" oninput="updateOpacityWithHex(this)">
@@ -451,11 +462,11 @@
                     @endif
                 </div>
                 
-                <button type="button" class="btn btn-secondary" onclick="addDynamicTagRow()" style="background: white;"><i class="fa-solid fa-plus"></i> Tambah Tag</button>
+                <button type="button" class="btn btn-secondary" onclick="addDynamicTagRow()" style="background: transparent; border: 1px dashed var(--border); color: var(--text-muted); padding: 0.5rem 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 4px; transition: all 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem;" onmouseover="this.style.background='rgba(0,0,0,0.02)'; this.style.borderColor='var(--text-muted)';" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)';"><i class="fa-solid fa-plus"></i> Tambah Tag</button>
             </div>
             
             <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
-            <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: 8px;"><i class="fa-solid fa-save"></i> Simpan Semua Pengaturan</button>
+            <button type="submit" class="btn" style="width: 100%; padding: 0.85rem; font-size: 0.85rem; border-radius: 4px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; background-color: transparent; color: var(--primary); border: 1px solid var(--primary); transition: all 0.2s; box-shadow: none;" onmouseover="this.style.backgroundColor='rgba(79, 70, 229, 0.05)'" onmouseout="this.style.backgroundColor='transparent'"><i class="fa-solid fa-save" style="margin-right: 0.5rem;"></i> Simpan Semua Pengaturan</button>
         </form>
     </div>
 </div>
@@ -489,6 +500,14 @@
         
         sessionStorage.setItem('activeSettingsTab', tabId);
     }
+    
+    function resetThemeColor(btn, defaultColor) {
+        const container = btn.closest('div');
+        const colorInput = container.querySelector('input[type="color"]');
+        const textInput = container.querySelector('input[type="text"]');
+        colorInput.value = defaultColor;
+        textInput.value = defaultColor;
+    }
 
     let tagIndex = {{ is_array($setting->dynamic_color_tags) ? count($setting->dynamic_color_tags) : 0 }};
     function addDynamicTagRow() {
@@ -499,11 +518,11 @@
         
         row.innerHTML = `
             <div style="flex: 2;">
-                <label style="font-size: 0.85rem;">Kata Kunci / Nama CSS Class</label>
+                <label>Kata Kunci / Nama CSS Class</label>
                 <input type="text" name="dynamic_color_tags[${tagIndex}][tag]" placeholder="Misal: btn-custom" class="form-control">
             </div>
             <div style="flex: 2;" class="bg-container-parent">
-                <label style="font-size: 0.85rem; display: flex; justify-content: space-between;">
+                <label style="display: flex; justify-content: space-between;">
                     Warna Latar (BG)
                     <span style="font-weight: normal; font-size: 0.75rem;">
                         <input type="checkbox" name="dynamic_color_tags[${tagIndex}][is_gradient]" value="1" onchange="this.closest('.bg-container-parent').querySelector('.gradient-options').style.display = this.checked ? 'flex' : 'none'"> Gradien
@@ -521,7 +540,7 @@
                 </div>
             </div>
             <div style="flex: 2;">
-                <label style="font-size: 0.85rem;">Warna Teks</label>
+                <label>Warna Teks</label>
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                     <input type="color" style="height: 42px; width: 42px; padding: 0; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" value="#000000" oninput="updateOpacityWithHex(this)">
                     <input type="range" min="0" max="100" value="100" style="width: 60px; flex-shrink: 0;" title="Opasitas" oninput="updateOpacityWithHex(this)">

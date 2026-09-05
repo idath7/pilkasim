@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-Pilkasim | Pemilihan Cerdas</title>
+    <title>{{ $faviconSetting->app_name ?? 'E-Pilketos' }} | Pemilihan Cerdas</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting)
         @if($faviconSetting->osim_logo)
@@ -11,7 +11,7 @@
         @endif
         @if($faviconSetting->seo_title || $faviconSetting->seo_description)
             <meta name="description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
-            <meta property="og:title" content="{{ $faviconSetting->seo_title ?? 'e-Pilkasim' }}">
+            <meta property="og:title" content="{{ $faviconSetting->seo_title ?? ($faviconSetting->app_name ?? 'E-Pilketos') }}">
             <meta property="og:description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
             @if($faviconSetting->seo_image)
                 <meta property="og:image" content="{{ url($faviconSetting->seo_image) }}">
@@ -64,10 +64,11 @@
         body {
             background-color: var(--background);
             color: var(--text-main);
-            line-height: 1.5;
-            min-height: 100vh;
+            line-height: 1.6;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
+            padding-top: 70px; /* added for fixed navbar */
         }
 
         .container {
@@ -91,23 +92,103 @@
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="number"],
+        input[type="email"],
+        input[type="file"],
+        select,
+        textarea {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 1rem;
-            transition: all 0.2s;
-            background-color: #F9FAFB;
+            padding: 0.5rem 0;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            border-radius: 0;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            box-shadow: none;
+            color: var(--text-main);
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-            background-color: var(--surface);
+            border-bottom-color: var(--primary);
+            box-shadow: none;
+            background-color: transparent;
         }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239CA3AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0 top 50%;
+            background-size: 0.65rem auto;
+            padding-right: 1.5rem;
+        }
+
+        label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        /* Minimalist Modal Fields */
+        .modal input[type="text"],
+        .modal input[type="password"],
+        .modal input[type="number"],
+        .modal input[type="file"],
+        .modal select,
+        .modal textarea {
+            width: 100% !important;
+            padding: 0.5rem 0 !important;
+            border: none !important;
+            border-bottom: 2px solid var(--border) !important;
+            border-radius: 0 !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s ease !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+            color: var(--text-main);
+        }
+
+        .modal input:focus,
+        .modal select:focus,
+        .modal textarea:focus {
+            outline: none !important;
+            border-bottom-color: var(--primary) !important;
+            box-shadow: none !important;
+            background-color: transparent !important;
+        }
+
+        .modal select {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239CA3AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 0 top 50% !important;
+            background-size: 0.65rem auto !important;
+            padding-right: 1.5rem !important;
+        }
+
+        .modal label {
+            font-size: 0.75rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            color: var(--text-muted) !important;
+            font-weight: 600 !important;
+            margin-bottom: 0.25rem !important;
+            display: block !important;
+        }
+
 
         .btn {
             display: inline-block;
@@ -160,12 +241,25 @@
 
         /* Header / Navbar */
         .navbar {
-            background: var(--surface);
-            box-shadow: var(--shadow);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .navbar.nav-hidden {
+            transform: translateY(-100%);
         }
         
         .navbar-brand {
@@ -182,6 +276,7 @@
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.9rem;
             padding: 0.5rem 0.75rem;
             border-radius: 8px;
             transition: all 0.2s;
@@ -221,6 +316,7 @@
             color: var(--text-main);
             padding: 0.75rem 1rem;
             text-decoration: none;
+            font-size: 0.9rem;
             display: block;
             transition: background 0.2s;
         }
@@ -246,6 +342,30 @@
             padding: 0.5rem;
         }
 
+        .page-container {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .page-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .page-content {
+            flex: 1;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-wrap: wrap;
@@ -260,17 +380,17 @@
                 width: 100%;
                 display: none !important;
                 flex-direction: column;
-                align-items: stretch !important;
-                order: 3;
-                gap: 0.25rem !important;
+                padding: 1rem 0;
+                border-top: 1px solid var(--border);
+                margin-top: 0.5rem;
             }
             .topbar-menu.show {
                 display: flex !important;
-                animation: fadeIn 0.3s ease-out;
             }
             .nav-link {
-                white-space: normal;
-                display: block;
+                width: 100%;
+            }
+            .dropdown {
                 width: 100%;
             }
             .dropdown-content {
@@ -279,6 +399,20 @@
                 border: none;
                 padding-left: 1rem;
                 background: rgba(0,0,0,0.02);
+            }
+            
+            .page-container {
+                flex-direction: column;
+            }
+            .page-sidebar {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .page-content {
+                width: 100%;
+                padding: 1rem;
             }
         }
 
@@ -299,7 +433,7 @@
     @if(!isset($hideNavbar))
     <nav class="navbar">
         <a href="{{ auth('admin')->check() ? route('admin.dashboard') : '#' }}" class="navbar-brand">
-            <i class="fa-solid fa-check-to-slot"></i> e-Pilkasim
+            <i class="fa-solid fa-check-to-slot"></i> {{ $faviconSetting->app_name ?? 'E-Pilketos' }}
         </a>
         
         @if(auth('admin')->check())
@@ -357,6 +491,12 @@
     <div class="container">
         @yield('content')
     </div>
+
+    @if(!request()->routeIs('kiosk'))
+    <footer style="text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 0.85rem; margin-top: auto;">
+        &copy; {{ date('Y') }} {{ $faviconSetting->app_name ?? 'E-Pilketos' }}. Dikembangkan oleh <strong>idath Studio</strong>.
+    </footer>
+    @endif
 
     <script>
         const Toast = Swal.mixin({
@@ -451,6 +591,26 @@
                 }
             });
         }
+
+        // Smart Sticky Header Logic
+        let lastScrollTop = 0;
+        const mainNavbar = document.querySelector('.navbar');
+        
+        window.addEventListener('scroll', function() {
+            if (!mainNavbar) return;
+            
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // 60 is approx the height of the navbar
+            if (scrollTop > lastScrollTop && scrollTop > 60) {
+                // Scroll Down
+                mainNavbar.classList.add('nav-hidden');
+            } else {
+                // Scroll Up
+                mainNavbar.classList.remove('nav-hidden');
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, { passive: true });
     </script>
     @yield('scripts')
 </body>

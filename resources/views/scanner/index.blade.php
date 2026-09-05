@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanner | e-Pilkasim</title>
+    <title>Scanner | {{ $appSetting->app_name ?? 'E-Pilketos' }}</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting && $faviconSetting->osim_logo)
         <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/png">

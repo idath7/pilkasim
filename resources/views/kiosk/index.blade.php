@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiosk | e-Pilkasim</title>
+    <title>Kiosk | {{ $appSetting->app_name ?? 'E-Pilketos' }}</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting && $faviconSetting->osim_logo)
         <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/png">
@@ -309,8 +309,11 @@
             
             <!-- Titles -->
             <div class="header-text" style="text-align: left;">
-                <h1 class="login-title" style="margin-bottom: 0.5rem; margin-top: 0;">Scan Untuk Memilih</h1>
-                <h2 class="school-name" style="margin-top: 0;">Pemilihan Ketua OSIM<br>{{ $appSetting->school_name ?? 'Nama Madrasah Belum Diatur' }}</h2>
+                <h1 class="login-title" style="margin-bottom: 0.5rem; margin-top: 0;">{{ $appSetting->header_title ?? 'LOGIN HAK PILIH' }}</h1>
+                <h2 class="school-name" style="margin-top: 0;">{{ $appSetting->election_title ?? 'Pemilihan Ketua OSIS' }}<br>{{ $appSetting->school_name ?? 'Nama Madrasah Belum Diatur' }}</h2>
+                @if(!empty($appSetting->period))
+                    <h3 style="font-size: 1.25rem; font-weight: 600; opacity: 0.9; margin-top: 0.5rem; margin-bottom: 0;">Periode {{ $appSetting->period }}</h3>
+                @endif
             </div>
         </div>
 
@@ -372,7 +375,7 @@
     <!-- Running Text di Bawah Layar -->
     <div class="running-text-container">
         <div class="running-text-content">
-            Selamat Datang di Pemilihan Ketua OSIM {{ $appSetting->school_name ?? '' }} Tahun {{ date('Y') }}. Pastikan Anda telah terdaftar sebagai pemilih tetap. Gunakan hak suara Anda dengan jujur, adil, bebas, dan rahasia! Satu suara Anda menentukan masa depan Madrasah kita.
+            {{ $appSetting->running_text ?? 'Selamat Datang di Pemilihan Ketua OSIM. Gunakan hak suara Anda dengan jujur, adil, bebas, dan rahasia!' }}
         </div>
     </div>
 

@@ -105,26 +105,27 @@
     }
     
     .otp-input {
-        width: 100%;
-        max-width: 65px;
-        margin: 0 auto;
-        aspect-ratio: 1;
-        font-size: 2.75rem;
-        font-weight: 700;
-        text-align: center;
-        border: 2px solid transparent;
-        border-radius: 12px;
-        background-color: #f3f4f6;
-        color: #111827;
-        transition: all 0.2s;
-        text-transform: uppercase;
+        width: 100% !important;
+        max-width: 65px !important;
+        margin: 0 auto !important;
+        aspect-ratio: 1 !important;
+        font-size: 2.75rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        border: 2px solid transparent !important;
+        border-radius: 12px !important;
+        background-color: #f3f4f6 !important;
+        color: #111827 !important;
+        transition: all 0.2s !important;
+        text-transform: uppercase !important;
+        padding: 0 !important;
     }
     
     .otp-input:focus {
-        outline: none;
-        background-color: #ffffff;
-        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
-        box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1);
+        outline: none !important;
+        background-color: #ffffff !important;
+        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }} !important;
+        box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1) !important;
     }
     
     .resend-text {
@@ -174,29 +175,32 @@
     
     .form-group label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
         font-weight: 600;
-        color: #374151;
-        font-size: 0.95rem;
+        color: #6b7280;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .form-input {
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 0.75rem 0;
         font-size: 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        background-color: #f9fafb;
+        border: none;
+        border-bottom: 2px solid #e5e7eb;
+        border-radius: 0;
+        background-color: transparent;
         color: #111827;
-        transition: all 0.2s;
+        transition: all 0.3s;
         box-sizing: border-box;
     }
 
     .form-input:focus {
         outline: none;
-        background-color: #ffffff;
-        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
-        box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1);
+        background-color: transparent;
+        border-bottom-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
+        box-shadow: none;
     }
     
     /* Responsive Adjustments for Mobile */
@@ -242,7 +246,7 @@
         @endphp
 
         @if($loginMethod === 'username_password')
-            <h1 class="login-title">Login Pemilih</h1>
+            <h1 class="login-title">{{ $appSetting->header_title ?? 'LOGIN HAK PILIH' }}</h1>
             <p class="login-subtitle">Masukkan Username dan Password Anda.</p>
             
             <form action="{{ route('voter.login') }}" method="POST" id="loginFormUserPass">
@@ -259,7 +263,7 @@
                 <button type="submit" class="btn-submit tag-akses-kode">Masuk</button>
             </form>
         @else
-            <h1 class="login-title">Verifikasi Kode</h1>
+            <h1 class="login-title">{{ $appSetting->header_title ?? 'LOGIN HAK PILIH' }}</h1>
             <p class="login-subtitle">Masukkan kode verifikasi unik yang diberikan oleh panitia pemilihan.</p>
             
             <form action="{{ route('voter.login') }}" method="POST" id="loginForm">

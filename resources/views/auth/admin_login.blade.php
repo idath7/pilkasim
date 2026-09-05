@@ -82,10 +82,12 @@
 
     .form-group-custom label {
         display: block;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: #374151;
+        margin-bottom: 0.25rem;
+        color: #6b7280;
     }
 
     .input-wrapper {
@@ -94,20 +96,22 @@
 
     .input-custom {
         width: 100%;
-        background-color: #f9fafb;
+        background-color: transparent;
         border: none;
-        padding: 1rem 1rem;
-        border-radius: 12px;
+        border-bottom: 2px solid #e5e7eb;
+        padding: 0.75rem 0;
+        border-radius: 0;
         font-size: 0.95rem;
         color: #111827;
         box-sizing: border-box;
-        transition: all 0.2s;
+        transition: all 0.3s;
     }
 
     .input-custom:focus {
         outline: none;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 2px #1e6e3c;
+        border-bottom-color: #1e6e3c;
+        box-shadow: none;
+        background-color: transparent;
     }
 
     .password-toggle {

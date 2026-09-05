@@ -85,31 +85,36 @@
 @section('content')
 <div class="header-flex animate-fade-in">
     <h2>Kelola Kandidat</h2>
-    <div>
-        <button onclick="document.getElementById('addCandidateModal').style.display='block'" class="btn"><i class="fa-solid fa-plus"></i> Tambah Kandidat</button>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+    <div style="display: flex; gap: 0.75rem;">
+        <button onclick="document.getElementById('addCandidateModal').style.display='block'" class="btn" style="background-color: transparent; color: var(--primary); border: 1px solid transparent; transition: all 0.2s; font-weight: 500; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.85rem;" onmouseover="this.style.backgroundColor='#e0e7ff'" onmouseout="this.style.backgroundColor='transparent'"><i class="fa-solid fa-plus" style="margin-right: 0.5rem;"></i> Tambah Kandidat</button>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary" style="background-color: transparent; color: var(--text-muted); border: 1px solid transparent; transition: all 0.2s; font-weight: 500; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.85rem;" onmouseover="this.style.backgroundColor='#f1f5f9'; this.style.color='var(--text-main)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-muted)'"><i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i> Kembali</a>
     </div>
 </div>
 
 <div class="candidates-grid animate-fade-in" style="animation-delay: 0.1s;">
     @foreach($candidates as $candidate)
         <div class="card candidate-card" style="position: relative;">
-            <div class="candidate-actions" style="position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 10;">
-                <button onclick="openEditModal({{ $candidate->id }}, '{{ addslashes($candidate->name) }}', '{{ addslashes($candidate->class_name) }}', '{{ addslashes($candidate->organization) }}', `{{ base64_encode($candidate->vision) }}`, `{{ base64_encode($candidate->mission) }}`)" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background-color: rgba(255,255,255,0.9); color: var(--primary);"><i class="fa-solid fa-pen"></i> Edit</button>
-                <form id="delete-form-{{ $candidate->id }}" action="{{ route('admin.candidates.destroy', $candidate->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="button" onclick="confirmDelete({{ $candidate->id }}, '{{ addslashes($candidate->name) }}')" class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background-color: #ef4444; color: white; border: none;"><i class="fa-solid fa-trash"></i> Hapus</button>
-                </form>
-            </div>
+
             @php
                 $photoPath = str_replace('../Assets', '/Assets', $candidate->photo);
             @endphp
             <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="candidate-photo" onerror="this.src='{{ asset('Assets/images/default-avatar.svg') }}'">
             
             <div class="candidate-info">
-                <div style="font-weight: 700; font-size: 1.125rem;">{{ $candidate->name }}</div>
+                <div style="font-weight: 700; font-size: 0.95rem;">{{ $candidate->name }}</div>
                 <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">{{ $candidate->class_name }} | {{ $candidate->organization }}</div>
-                <div><span class="badge" style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">{{ $candidate->votes }} Suara</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                    <span class="badge" style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">{{ $candidate->votes }} Suara</span>
+                    
+                    <div class="candidate-actions" style="display: flex; gap: 0.5rem;">
+                        <button onclick="openEditModal({{ $candidate->id }}, '{{ addslashes($candidate->name) }}', '{{ addslashes($candidate->class_name) }}', '{{ addslashes($candidate->organization) }}', `{{ base64_encode($candidate->vision) }}`, `{{ base64_encode($candidate->mission) }}`)" class="btn" style="padding: 0; font-size: 0.875rem; background-color: transparent; color: var(--primary); border: 1px solid transparent; transition: all 0.2s; border-radius: 6px; display: flex; justify-content: center; align-items: center; width: 32px; height: 32px;" title="Edit" onmouseover="this.style.backgroundColor='#e0e7ff'" onmouseout="this.style.backgroundColor='transparent'"><i class="fa-solid fa-pen"></i></button>
+                        
+                        <form id="delete-form-{{ $candidate->id }}" action="{{ route('admin.candidates.destroy', $candidate->id) }}" method="POST" style="margin: 0;">
+                            @csrf
+                            <button type="button" onclick="confirmDelete({{ $candidate->id }}, '{{ addslashes($candidate->name) }}')" class="btn" style="padding: 0; font-size: 0.875rem; background-color: transparent; color: #ef4444; border: 1px solid transparent; transition: all 0.2s; border-radius: 6px; display: flex; justify-content: center; align-items: center; width: 32px; height: 32px;" title="Hapus" onmouseover="this.style.backgroundColor='#fee2e2'" onmouseout="this.style.backgroundColor='transparent'"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     @endforeach
@@ -132,9 +137,9 @@
                         
                         <!-- Custom Searchable Dropdown -->
                         <div class="custom-select-wrapper" style="position: relative; margin-top: 0.5rem;">
-                            <div class="custom-select-trigger" onclick="toggleDropdown()" style="padding: 0.75rem; background: white; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="custom-select-trigger" onclick="toggleDropdown()" style="padding: 0.5rem 0; background: transparent; border: none; border-bottom: 2px solid var(--border); border-radius: 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; color: var(--text-main); transition: all 0.3s ease;">
                                 <span id="custom-select-text">-- Cari atau pilih siswa --</span>
-                                <i class="fa-solid fa-chevron-down"></i>
+                                <i class="fa-solid fa-chevron-down" style="color: #9CA3AF;"></i>
                             </div>
                             
                             <div class="custom-options-container" id="custom-options" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: var(--radius); margin-top: 0.25rem; box-shadow: var(--shadow-lg); z-index: 100; max-height: 250px; overflow-y: auto;">
@@ -197,7 +202,7 @@
             </div>
             
             <div style="margin-top: 1.5rem;">
-                <button type="submit" class="btn" style="width: 100%;">Simpan Kandidat</button>
+                <button type="submit" class="btn" style="width: 100%; border-radius: 8px; font-weight: 600; padding: 0.75rem; border: none; transition: all 0.2s; background-color: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 8px -1px rgba(79, 70, 229, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(79, 70, 229, 0.2)'">Simpan Kandidat</button>
             </div>
         </form>
     </div>
@@ -253,7 +258,7 @@
             </div>
             
             <div style="margin-top: 1.5rem;">
-                <button type="submit" class="btn" style="width: 100%;">Update Kandidat</button>
+                <button type="submit" class="btn" style="width: 100%; border-radius: 8px; font-weight: 600; padding: 0.75rem; border: none; transition: all 0.2s; background-color: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 8px -1px rgba(79, 70, 229, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(79, 70, 229, 0.2)'">Update Kandidat</button>
             </div>
         </form>
     </div>

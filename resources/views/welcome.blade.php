@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selamat Datang | e-Pilkasim</title>
+    <title>Selamat Datang | {{ $appSetting->app_name ?? 'E-Pilketos' }}</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting)
         @if($faviconSetting->osim_logo)
@@ -11,7 +11,7 @@
         @endif
         @if($faviconSetting->seo_title || $faviconSetting->seo_description)
             <meta name="description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
-            <meta property="og:title" content="{{ $faviconSetting->seo_title ?? 'e-Pilkasim' }}">
+            <meta property="og:title" content="{{ $faviconSetting->seo_title ?? ($appSetting->app_name ?? 'E-Pilketos') }}">
             <meta property="og:description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
             @if($faviconSetting->seo_image)
                 <meta property="og:image" content="{{ url($faviconSetting->seo_image) }}">
@@ -230,8 +230,11 @@
             </div>
 
             <div class="login-area">
-                <h1 class="login-title">Login Hak Pilih</h1>
-                <h2 class="school-name">Pemilihan Ketua OSIM<br>{{ $appSetting->school_name ?? 'Nama Sekolah Belum Diatur' }}</h2>
+                <h1 class="login-title">{{ $appSetting->header_title ?? 'LOGIN HAK PILIH' }}</h1>
+                <h2 class="school-name">{{ $appSetting->election_title ?? 'Pemilihan Ketua OSIS' }}<br>{{ $appSetting->school_name ?? 'Nama Sekolah Belum Diatur' }}</h2>
+                @if(!empty($appSetting->period))
+                    <h3 style="font-size: 1.25rem; font-weight: 600; opacity: 0.9; margin-top: 0.5rem; margin-bottom: 2rem; display: block;">Periode {{ $appSetting->period }}</h3>
+                @endif
                 
                 <a href="{{ route('voter.login') }}" class="btn-primary">
                     Mulai Memilih <i class="fa-solid fa-qrcode"></i>

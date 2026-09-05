@@ -13,8 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
+        $middleware->web(prepend: [
+            \App\Http\Middleware\CheckInstallation::class,
+        ]);
         $middleware->alias([
             'check.user.agent' => \App\Http\Middleware\CheckUserAgent::class,
+            'installed' => \App\Http\Middleware\RedirectIfInstalled::class,
         ]);
         
         $middleware->redirectGuestsTo(function (Request $request) {

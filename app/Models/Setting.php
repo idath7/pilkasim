@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     protected $fillable = [
+        'app_name',
         'school_name',
+        'period',
+        'header_title',
+        'election_title',
+        'running_text',
         'instructions',
         'osim_logo',
         'school_logo',

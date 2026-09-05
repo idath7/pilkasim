@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiosk Auth | e-Pilkasim</title>
+    <title>Kiosk Auth | {{ $appSetting->app_name ?? 'E-Pilketos' }}</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting && $faviconSetting->osim_logo)
         <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/x-icon">
@@ -84,23 +84,24 @@
         }
 
         .pin-input {
-            width: 45px;
-            height: 55px;
-            font-size: 1.5rem;
-            text-align: center;
-            font-weight: 700;
-            border: 2px solid #E5E7EB;
-            border-radius: 8px;
-            text-transform: uppercase;
-            transition: all 0.2s;
-            background: #F9FAFB;
+            width: 45px !important;
+            height: 55px !important;
+            font-size: 1.5rem !important;
+            text-align: center !important;
+            font-weight: 700 !important;
+            border: 2px solid #E5E7EB !important;
+            border-radius: 8px !important;
+            text-transform: uppercase !important;
+            transition: all 0.2s !important;
+            background: #F9FAFB !important;
+            padding: 0 !important;
         }
 
         .pin-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-            background: white;
+            outline: none !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2) !important;
+            background: white !important;
         }
 
         .btn {

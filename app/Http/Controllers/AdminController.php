@@ -38,18 +38,74 @@ class AdminController extends Controller
 
     // --- VOTER MANAGEMENT ---
 
-    public function voters()
+    public function voters(Request $request)
     {
         if (auth('admin')->user()->role === 'pembina') abort(403);
-        $voters = Voter::where('type', 'student')->orderBy('class_name')->get();
-        return view('admin.voters', compact('voters'));
+        $perPage = $request->query('per_page', 10);
+        $search = $request->query('search');
+        $sort = $request->query('sort', 'class_name');
+        $direction = $request->query('direction', 'asc');
+        
+        $query = Voter::where('type', 'student');
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%")
+                  ->orWhere('class_name', 'like', "%{$search}%");
+            });
+        }
+        
+        $allowedSorts = ['name', 'nis', 'class_name', 'username', 'gender', 'has_voted'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
+        } else {
+            $query->orderBy('class_name', 'asc')->orderBy('name', 'asc');
+        }
+        
+        if ($perPage === 'all') {
+            $voters = $query->paginate(999999)->withQueryString();
+        } else {
+            $voters = $query->paginate((int) $perPage)->withQueryString();
+        }
+        
+        return view('admin.voters', compact('voters', 'perPage', 'search', 'sort', 'direction'));
     }
 
-    public function teachers()
+    public function teachers(Request $request)
     {
         if (auth('admin')->user()->role === 'pembina') abort(403);
-        $voters = Voter::where('type', 'teacher')->orderBy('class_name')->get();
-        return view('admin.teachers', compact('voters'));
+        $perPage = $request->query('per_page', 10);
+        $search = $request->query('search');
+        $sort = $request->query('sort', 'class_name');
+        $direction = $request->query('direction', 'asc');
+        
+        $query = Voter::where('type', 'teacher');
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%")
+                  ->orWhere('class_name', 'like', "%{$search}%");
+            });
+        }
+        
+        $allowedSorts = ['name', 'nis', 'class_name', 'username', 'gender', 'has_voted'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
+        } else {
+            $query->orderBy('class_name', 'asc')->orderBy('name', 'asc');
+        }
+        
+        if ($perPage === 'all') {
+            $voters = $query->paginate(999999)->withQueryString();
+        } else {
+            $voters = $query->paginate((int) $perPage)->withQueryString();
+        }
+        
+        return view('admin.teachers', compact('voters', 'perPage', 'search', 'sort', 'direction'));
     }
 
     public function printCards(Request $request)
@@ -95,6 +151,65 @@ class AdminController extends Controller
         return back()->with('success', 'Pemilih berhasil ditambahkan.');
     }
 
+    public function updateVoter(Request $request, $id)
+    {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
+        $voter = Voter::findOrFail($id);
+        
+        $request->validate([
+            'nis' => 'nullable|string',
+            'name' => 'required|string',
+            'class_name' => 'required|string',
+            'gender' => 'required|string|in:L,P',
+            'access_code' => 'nullable|string|unique:voters,access_code,'.$id,
+            'username' => 'nullable|string|unique:voters,username,'.$id,
+            'password' => 'nullable|string|min:4',
+        ]);
+
+        $voterData = [
+            'nis' => $request->nis,
+            'name' => $request->name,
+            'class_name' => $request->class_name,
+            'gender' => $request->gender,
+        ];
+
+        if ($request->filled('access_code')) {
+            $voterData['access_code'] = strtoupper($request->access_code);
+        }
+
+        if ($request->filled('username')) {
+            $voterData['username'] = $request->username;
+        } else {
+            $voterData['username'] = null;
+        }
+
+        if ($request->filled('password')) {
+            $voterData['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        $voter->update($voterData);
+
+        return back()->with('success', 'Data pemilih berhasil diperbarui.');
+    }
+
+    public function destroyVoter($id)
+    {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
+        $voter = Voter::findOrFail($id);
+        
+        // Decrement candidate vote if they had voted
+        if ($voter->has_voted && $voter->voted_candidate_id) {
+            $candidate = Candidate::find($voter->voted_candidate_id);
+            if ($candidate && $candidate->votes > 0) {
+                $candidate->decrement('votes');
+            }
+        }
+        
+        $voter->delete();
+        
+        return back()->with('success', 'Data pemilih berhasil dihapus.');
+    }
+
     public function resetVoterStatus($id)
     {
         if (auth('admin')->user()->role === 'pembina') abort(403);
@@ -114,6 +229,67 @@ class AdminController extends Controller
         ]);
         
         return back()->with('success', 'Status pemilihan siswa berhasil direset (Suara kandidat otomatis dikurangi).');
+    }
+
+    public function bulkDestroyVoters(Request $request)
+    {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
+        $ids = json_decode($request->input('ids', '[]'), true);
+        if (empty($ids)) return back()->with('error', 'Tidak ada data yang dipilih.');
+
+        $voters = Voter::whereIn('id', $ids)->get();
+        $count = 0;
+        foreach ($voters as $voter) {
+            if ($voter->has_voted && $voter->voted_candidate_id) {
+                $candidate = Candidate::find($voter->voted_candidate_id);
+                if ($candidate && $candidate->votes > 0) {
+                    $candidate->decrement('votes');
+                }
+            }
+            $voter->delete();
+            $count++;
+        }
+        return back()->with('success', "Berhasil menghapus {$count} data pemilih.");
+    }
+
+    public function bulkResetVoters(Request $request)
+    {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
+        $ids = json_decode($request->input('ids', '[]'), true);
+        if (empty($ids)) return back()->with('error', 'Tidak ada data yang dipilih.');
+
+        $voters = Voter::whereIn('id', $ids)->get();
+        $count = 0;
+        foreach ($voters as $voter) {
+            if ($voter->has_voted && $voter->voted_candidate_id) {
+                $candidate = Candidate::find($voter->voted_candidate_id);
+                if ($candidate && $candidate->votes > 0) {
+                    $candidate->decrement('votes');
+                }
+            }
+            $voter->update([
+                'has_voted' => false,
+                'voted_candidate_id' => null
+            ]);
+            $count++;
+        }
+        return back()->with('success', "Berhasil mereset status {$count} pemilih.");
+    }
+
+    public function bulkRegenerateCodes(Request $request)
+    {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
+        $ids = json_decode($request->input('ids', '[]'), true);
+        if (empty($ids)) return back()->with('error', 'Tidak ada data yang dipilih.');
+
+        $voters = Voter::whereIn('id', $ids)->get();
+        $count = 0;
+        foreach ($voters as $voter) {
+            $voter->access_code = strtoupper(Str::random(8));
+            $voter->save();
+            $count++;
+        }
+        return back()->with('success', "Berhasil membuat kode akses baru untuk {$count} pemilih.");
     }
 
     public function generateAccessCodes(Request $request)
@@ -294,7 +470,12 @@ class AdminController extends Controller
         $setting = \App\Models\Setting::getCached();
         
         $data = $request->validate([
+            'app_name' => 'nullable|string',
             'school_name' => 'nullable|string',
+            'period' => 'nullable|string',
+            'header_title' => 'nullable|string',
+            'election_title' => 'nullable|string',
+            'running_text' => 'nullable|string',
             'instructions' => 'nullable|string',
             'theme_color_1' => 'nullable|string',
             'theme_color_2' => 'nullable|string',
@@ -464,7 +645,10 @@ class AdminController extends Controller
         }
         
         $users = Admin::all();
-        return view('admin.users', compact('users'));
+        $students = \App\Models\Voter::where('type', 'student')->select('id', 'name', 'username', 'nis')->get();
+        $teachers = \App\Models\Voter::where('type', 'teacher')->select('id', 'name', 'username', 'nis')->get();
+        
+        return view('admin.users', compact('users', 'students', 'teachers'));
     }
     
     public function storeUser(Request $request)

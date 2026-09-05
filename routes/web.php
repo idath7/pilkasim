@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VotingController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\InstallController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,6 +15,17 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showVoterLogin'])->name('voter.login');
 Route::post('/login', [AuthController::class, 'voterLogin'])->middleware('throttle:15,1');
 Route::post('/logout', [AuthController::class, 'voterLogout'])->name('voter.logout');
+
+// Installer Routes
+Route::prefix('install')->name('install.')->middleware('installed')->group(function () {
+    Route::get('/', [InstallController::class, 'index'])->name('index');
+    Route::get('/database', [InstallController::class, 'database'])->name('database');
+    Route::post('/database', [InstallController::class, 'processDatabase'])->name('process_database');
+    Route::get('/setup', [InstallController::class, 'setup'])->name('setup');
+    Route::post('/setup', [InstallController::class, 'processSetup'])->name('process_setup');
+});
+// Complete route is outside the 'installed' middleware because we need to see it after installation is complete
+Route::get('/install/complete', [InstallController::class, 'complete'])->name('install.complete');
 
 // Voting
 Route::middleware('check.user.agent')->group(function () {
@@ -105,12 +117,17 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/admin/voters/print', [AdminController::class, 'printCards'])->name('admin.voters.print');
 
     Route::post('/admin/voters', [AdminController::class, 'storeVoter'])->name('admin.voters.store');
+    Route::post('/admin/voters/{id}/update', [AdminController::class, 'updateVoter'])->name('admin.voters.update');
+    Route::post('/admin/voters/{id}/delete', [AdminController::class, 'destroyVoter'])->name('admin.voters.destroy');
     Route::post('/admin/voters/{id}/reset', [AdminController::class, 'resetVoterStatus'])->name('admin.voters.reset');
     Route::post('/admin/voters/{id}/regenerate-code', [AdminController::class, 'regenerateSingleCode'])->name('admin.voters.regenerate_single');
     Route::post('/admin/voters/reset-all', [AdminController::class, 'resetAllVoters'])->name('admin.voters.reset_all');
     Route::post('/admin/voters/reset-votes', [AdminController::class, 'resetVotes'])->name('admin.voters.reset_votes');
     Route::post('/admin/voters/generate-codes', [AdminController::class, 'generateAccessCodes'])->name('admin.voters.generate_codes');
     Route::post('/admin/voters/import', [AdminController::class, 'importVoters'])->name('admin.voters.import');
+    Route::post('/admin/voters/bulk-destroy', [AdminController::class, 'bulkDestroyVoters'])->name('admin.voters.bulk_destroy');
+    Route::post('/admin/voters/bulk-reset', [AdminController::class, 'bulkResetVoters'])->name('admin.voters.bulk_reset');
+    Route::post('/admin/voters/bulk-regenerate', [AdminController::class, 'bulkRegenerateCodes'])->name('admin.voters.bulk_regenerate');
     Route::get('/admin/voters/template', [AdminController::class, 'downloadVoterTemplate'])->name('admin.voters.template');
     
     // Candidate Management
