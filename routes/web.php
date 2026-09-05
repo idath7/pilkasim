@@ -126,4 +126,10 @@ Route::middleware('auth:admin')->group(function () {
     
     // Auth & Others
     Route::post('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
+    
+    // User Management
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::post('/admin/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
+    Route::post('/admin/users/{id}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    Route::post('/admin/users/{id}/destroy', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 });

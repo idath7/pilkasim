@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Candidate;
 use App\Models\Voter;
+use App\Models\Admin;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\VoterImport;
 use Illuminate\Support\Facades\Storage;
@@ -38,12 +40,14 @@ class AdminController extends Controller
 
     public function voters()
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $voters = Voter::where('type', 'student')->orderBy('class_name')->get();
         return view('admin.voters', compact('voters'));
     }
 
     public function teachers()
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $voters = Voter::where('type', 'teacher')->orderBy('class_name')->get();
         return view('admin.teachers', compact('voters'));
     }
@@ -59,6 +63,7 @@ class AdminController extends Controller
 
     public function storeVoter(Request $request)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $request->validate([
             'nis' => 'nullable|string',
             'name' => 'required|string',
@@ -92,6 +97,7 @@ class AdminController extends Controller
 
     public function resetVoterStatus($id)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $voter = Voter::findOrFail($id);
         
         // Decrement candidate vote if they had voted
@@ -112,6 +118,7 @@ class AdminController extends Controller
 
     public function generateAccessCodes(Request $request)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $type = $request->input('type', 'student');
         $forceAll = $request->input('force_all', false); // true means replace existing codes
         
@@ -139,6 +146,7 @@ class AdminController extends Controller
 
     public function regenerateSingleCode($id)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $voter = Voter::findOrFail($id);
         $voter->access_code = strtoupper(Str::random(8));
         $voter->save();
@@ -148,6 +156,7 @@ class AdminController extends Controller
 
     public function resetAllVoters()
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         Voter::truncate();
         Candidate::query()->update(['votes' => 0]);
         return back()->with('success', 'Seluruh data pemilih dihapus dan semua hasil perolehan suara di-reset ke 0.');
@@ -155,6 +164,7 @@ class AdminController extends Controller
 
     public function resetVotes()
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         Candidate::query()->update(['votes' => 0]);
         Voter::query()->update(['has_voted' => false, 'voted_candidate_id' => null]);
         
@@ -163,6 +173,7 @@ class AdminController extends Controller
 
     public function importVoters(Request $request)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
             'type' => 'nullable|string|in:student,teacher'
@@ -195,6 +206,7 @@ class AdminController extends Controller
 
     public function candidates()
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $candidates = Candidate::all();
         $existingCandidates = $candidates->map(function($c) { return $c->name . '|' . $c->class_name; })->toArray();
         $voters = Voter::orderBy('name')->get()->filter(function($voter) use ($existingCandidates) {
@@ -206,6 +218,7 @@ class AdminController extends Controller
 
     public function storeCandidate(Request $request)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $data = $request->validate([
             'name' => 'required|string',
             'class_name' => 'nullable|string',
@@ -226,6 +239,7 @@ class AdminController extends Controller
 
     public function updateCandidate(Request $request, $id)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $candidate = Candidate::findOrFail($id);
 
         $data = $request->validate([
@@ -248,6 +262,7 @@ class AdminController extends Controller
 
     public function destroyCandidate($id)
     {
+        if (auth('admin')->user()->role === 'pembina') abort(403);
         $candidate = \App\Models\Candidate::findOrFail($id);
         
         // Optional: Delete photo if exists
@@ -262,6 +277,7 @@ class AdminController extends Controller
 
     public function settings()
     {
+        if (auth('admin')->user()->role !== 'admin') abort(403);
         $setting = \App\Models\Setting::firstOrCreate([
             'id' => 1
         ], [
@@ -274,6 +290,7 @@ class AdminController extends Controller
 
     public function updateSettings(Request $request)
     {
+        if (auth('admin')->user()->role !== 'admin') abort(403);
         $setting = \App\Models\Setting::getCached();
         
         $data = $request->validate([
@@ -352,6 +369,7 @@ class AdminController extends Controller
 
     public function optimize()
     {
+        if (auth('admin')->user()->role !== 'admin') abort(403);
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         \Illuminate\Support\Facades\Artisan::call('optimize');
         return back()->with('success', 'Sistem berhasil dioptimalkan (Cache Cleared & Re-cached).');
@@ -432,6 +450,94 @@ class AdminController extends Controller
         imagedestroy($image);
 
         return '/storage/' . $folder . '/' . $filename;
+    }
+
+    // ==========================================
+    // USER MANAGEMENT (ADMIN / PETUGAS / PEMBINA)
+    // ==========================================
+    
+    public function users()
+    {
+        // Hanya admin utama yang boleh mengakses halaman ini
+        if (auth('admin')->user()->role !== 'admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        
+        $users = Admin::all();
+        return view('admin.users', compact('users'));
+    }
+    
+    public function storeUser(Request $request)
+    {
+        if (auth('admin')->user()->role !== 'admin') {
+            abort(403);
+        }
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:admins',
+            'email' => 'required|email|max:255|unique:admins',
+            'password' => 'required|string|min:4',
+            'role' => 'required|in:admin,panitia,pembina',
+        ]);
+        
+        Admin::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+        
+        return redirect()->route('admin.users')->with('success', 'Akun berhasil ditambahkan!');
+    }
+    
+    public function updateUser(Request $request, $id)
+    {
+        if (auth('admin')->user()->role !== 'admin') {
+            abort(403);
+        }
+        
+        $user = Admin::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:admins,username,'.$id,
+            'email' => 'required|email|max:255|unique:admins,email,'.$id,
+            'password' => 'nullable|string|min:4',
+            'role' => 'required|in:admin,panitia,pembina',
+        ]);
+        
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->email = $request->email;
+        $user->role = $request->role;
+        
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        
+        $user->save();
+        
+        return redirect()->route('admin.users')->with('success', 'Akun berhasil diperbarui!');
+    }
+    
+    public function destroyUser($id)
+    {
+        if (auth('admin')->user()->role !== 'admin') {
+            abort(403);
+        }
+        
+        $user = Admin::findOrFail($id);
+        
+        // Mencegah admin menghapus dirinya sendiri
+        if ($user->id === auth('admin')->id()) {
+            return redirect()->route('admin.users')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri saat sedang login!');
+        }
+        
+        $user->delete();
+        
+        return redirect()->route('admin.users')->with('success', 'Akun berhasil dihapus!');
     }
 }
 

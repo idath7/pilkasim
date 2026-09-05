@@ -153,6 +153,7 @@
     </div>
 </div>
 
+@if(auth('admin')->user()->role !== 'pembina')
 <div class="card animate-fade-in" style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
         <div style="flex: 1;">
@@ -188,6 +189,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <div class="stat-grid animate-fade-in" style="animation-delay: 0.1s">
     <div class="card stat-card">
@@ -252,6 +254,7 @@
     </div>
     
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        @if(auth('admin')->user()->role !== 'pembina')
         <a href="{{ route('admin.voters') }}" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-decoration: none; transition: all 0.3s ease; text-align: center; border: 1px solid var(--border);">
             <div style="width: 60px; height: 60px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
                 <i class="fa-solid fa-users"></i>
@@ -275,7 +278,9 @@
             <h4 style="margin: 0; color: var(--text);">Kandidat Ketua</h4>
             <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Visi, misi, dan foto calon</p>
         </a>
+        @endif
         
+        @if(auth('admin')->user()->role === 'admin')
         <a href="{{ route('admin.settings') }}" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-decoration: none; transition: all 0.3s ease; text-align: center; border: 1px solid var(--border);">
             <div style="width: 60px; height: 60px; background: rgba(107, 114, 128, 0.1); color: #6B7280; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
                 <i class="fa-solid fa-gear"></i>
@@ -283,6 +288,15 @@
             <h4 style="margin: 0; color: var(--text);">Pengaturan Sistem</h4>
             <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Tema, jadwal, dan SEO</p>
         </a>
+        
+        <a href="{{ route('admin.users') }}" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-decoration: none; transition: all 0.3s ease; text-align: center; border: 1px solid var(--border);">
+            <div style="width: 60px; height: 60px; background: rgba(239, 68, 68, 0.1); color: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h4 style="margin: 0; color: var(--text);">Manajemen Petugas</h4>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Kelola akses Admin & Panitia</p>
+        </a>
+        @endif
     </div>
 
     <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
