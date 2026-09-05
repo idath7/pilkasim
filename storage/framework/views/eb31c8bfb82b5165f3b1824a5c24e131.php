@@ -1,14 +1,12 @@
-@extends('layouts.app', ['hideNavbar' => true])
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <style>
     body {
         background: linear-gradient(135deg, #1e6e3c 0%, #2f8e52 100%);
-        @if(isset($appSetting) && $appSetting->use_gradient)
-            background: linear-gradient(135deg, {{ $appSetting->theme_color_1 ?? '#2db8a6' }} 0%, {{ $appSetting->theme_color_2 ?? '#1b9282' }} 100%);
-        @else
-            background-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
-        @endif
+        <?php if(isset($appSetting) && $appSetting->use_gradient): ?>
+            background: linear-gradient(135deg, <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?> 0%, <?php echo e($appSetting->theme_color_2 ?? '#1b9282'); ?> 100%);
+        <?php else: ?>
+            background-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;
+        <?php endif; ?>
         margin: 0;
         padding-top: 0 !important;
         height: 100vh;
@@ -32,107 +30,87 @@
         align-items: center;
         min-height: 100vh;
         width: 100%;
-        @if(isset($appSetting) && $appSetting->use_gradient)
-            background: linear-gradient(135deg, {{ $appSetting->theme_color_1 ?? '#2db8a6' }} 0%, {{ $appSetting->theme_color_2 ?? '#1b9282' }} 100%);
-        @else
-            background-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
-        @endif
+        background-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;
         padding: 2rem;
         position: relative;
         z-index: 10;
         box-sizing: border-box;
-        overflow-x: hidden; /* Ganti dari hidden agar bisa di-scroll secara vertikal (atas-bawah) */
-        overflow-y: auto;
+        overflow: hidden;
         gap: 4rem; /* Jarak antara header kiri dan box kanan */
     }
     
-    .header-section {
-        display: flex; 
-        flex-direction: column; /* Ubah ke column untuk susunan default dari Kiosk */
-        align-items: flex-start;
+    .kiosk-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Rata kiri */
         text-align: left;
         max-width: 500px;
-        z-index: 10;
-        gap: 1.5rem;
+        color: #ffffff;
     }
 
-    .header-logo {
-        width: 180px;
-        flex-shrink: 0;
-        max-width: 100%;
-    }
-
-    .header-text {
-        color: #ffffff; 
-        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    .kiosk-header img {
+        width: 200px;
+        height: auto;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
     }
     
     .header-text h1 {
-        margin-bottom: 0.25rem; 
+        margin-bottom: 0.5rem; 
         margin-top: 0; 
-        font-size: 1.8rem; /* Agak dikecilkan dari 2.2rem */
+        font-size: 2.5rem; /* Lebih besar karena di samping */
         font-weight: 800; 
         text-transform: uppercase; 
         letter-spacing: 1px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
     .header-text h2 {
         margin-top: 0; 
-        margin-bottom: 0; 
-        font-size: 1.3rem; 
+        font-size: 1.5rem; 
         font-weight: 600; 
-        line-height: 1.2; /* Dirapatkan */
+        line-height: 1.4;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        opacity: 0.95;
     }
 
     .header-text h3 {
         font-size: 1.1rem; 
         font-weight: 600; 
-        opacity: 0.9; 
-        margin-top: 0; 
+        opacity: 0.8; 
+        margin-top: 0.5rem; 
         margin-bottom: 0;
-        line-height: 1.2; /* Dirapatkan */
     }
 
     .login-card {
         background: rgba(255, 255, 255, 0.98);
         border-radius: 24px;
-        padding: 2.5rem 2rem; /* Padding dikurangi */
+        padding: 3rem 2.5rem;
         width: 100%;
-        max-width: 380px; /* Lebar maksimal dikurangi */
+        max-width: 420px;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         position: relative;
         text-align: center;
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        flex-shrink: 0; /* Mencegah card mengecil */
     }
 
     /* Mobile Responsiveness */
     @media (max-width: 900px) {
         .login-container {
             flex-direction: column;
-            padding: 2rem 1rem; /* Kurangi padding samping */
-            padding-top: 5.5rem; /* Diturunkan lebih jauh dari atas layar */
-            gap: 1.5rem; /* Dekatkan antara header dan form */
-            justify-content: flex-start; /* Tarik semua konten ke ATAS */
+            padding: 1.5rem;
+            gap: 2rem;
+            justify-content: flex-start;
         }
-        .header-section {
-            flex-direction: row; /* Logo dan teks sejajar (kiri-kanan) di HP */
+        .kiosk-header {
             align-items: center;
-            text-align: left; /* Teks rata kiri karena logo ada di kirinya */
-            max-width: 100%;
-            gap: 1rem;
+            text-align: center;
+            margin-top: 2rem;
         }
-        .header-logo {
-            width: 115px; /* Logo dibesarkan kembali sesuai permintaan */
-        }
-        .header-text h1 { font-size: 1.3rem; }
-        .header-text h2 { font-size: 1rem; }
-        
+        .header-text h1 { font-size: 1.8rem; }
+        .header-text h2 { font-size: 1.2rem; }
         .login-card {
             padding: 2.5rem 1.5rem;
-            min-height: auto; /* Cabut min-height di HP agar tidak terlalu panjang */
         }
     }
     
@@ -180,7 +158,7 @@
 
     .login-icon {
         font-size: 3.5rem;
-        color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }};
+        color: <?php echo e($appSetting->theme_color_3 ?? '#f59e0b'); ?>;
         margin-bottom: 0.5rem;
         margin-top: 1rem;
     }
@@ -202,23 +180,21 @@
     
     .otp-container {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* Kembali ke 4 kolom agar kotak bisa membesar */
-        gap: 0.8rem;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
         margin-bottom: 2rem;
-        width: 100%;
-        justify-content: center;
     }
     
     .otp-input {
         width: 100% !important;
-        max-width: 55px !important; /* Diperbesar */
+        max-width: 65px !important;
         margin: 0 auto !important;
         aspect-ratio: 1 !important;
-        font-size: 2rem !important; /* Teks diperbesar */
+        font-size: 2.75rem !important;
         font-weight: 700 !important;
         text-align: center !important;
         border: 2px solid transparent !important;
-        border-radius: 10px !important; /* Lengkungan sedikit ditambah */
+        border-radius: 12px !important;
         background-color: #f3f4f6 !important;
         color: #111827 !important;
         transition: all 0.2s !important;
@@ -229,7 +205,7 @@
     .otp-input:focus {
         outline: none !important;
         background-color: #ffffff !important;
-        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }} !important;
+        border-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?> !important;
         box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1) !important;
     }
     
@@ -246,13 +222,13 @@
     }
     
     .btn-submit {
-        background: linear-gradient(135deg, {{ $appSetting->theme_color_1 ?? '#2db8a6' }}, {{ $appSetting->theme_color_2 ?? '#1c8c7d' }});
+        background: linear-gradient(135deg, <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>, <?php echo e($appSetting->theme_color_2 ?? '#1c8c7d'); ?>);
         color: #ffffff;
         border: none;
-        padding: 0.65rem 1rem;
+        padding: 0.85rem 1rem;
         border-radius: 50px;
         width: 100%;
-        font-size: 0.95rem;
+        font-size: 1.1rem;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -268,18 +244,18 @@
     }
     
     .minimal-group {
-        text-align: center; /* Diubah ke tengah */
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: left;
     }
-
+    
     .minimal-label {
         display: block;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
+        color: #64748b;
+        margin-bottom: 0.25rem;
     }
 
     .minimal-input-wrapper {
@@ -288,28 +264,27 @@
 
     .minimal-input {
         width: 100%;
-        padding: 0.75rem 1.5rem; /* Tambah padding agar tidak nabrak lengkungan */
+        padding: 0.5rem 0; /* No left padding, text starts at edge */
         font-size: 1.1rem !important;
         font-weight: 600;
         color: #0f172a;
-        background-color: #f8fafc !important; /* Latar belakang cerah */
-        border: 2px solid #cbd5e1 !important; /* Border keliling */
-        border-radius: 9999px !important; /* Lengkungan penuh (pill) dipaksa mutlak */
+        background-color: transparent; /* Transparan */
+        border: none;
+        border-bottom: 2px solid #cbd5e1; /* Border-bottom saja */
+        border-radius: 0;
         outline: none;
-        transition: all 0.3s;
+        transition: border-color 0.3s;
         box-sizing: border-box;
-        text-align: center;
-    }
-
-    .minimal-input:focus {
-        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }} !important;
-        background-color: #ffffff !important;
-        box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1) !important;
     }
 
     .minimal-input::placeholder {
-        color: #94a3b8;
-        font-weight: 400 !important; /* Jangan tebal */
+        color: #cbd5e1;
+        font-weight: 400;
+    }
+
+    .minimal-input:focus {
+        border-bottom-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;
+        /* Tidak ada bayangan/warna latar saat fokus */
     }
     
     .form-input {
@@ -343,7 +318,7 @@
     }
     
     .input-action-btn:hover {
-        color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
+        color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;
     }
     
     /* Responsive Adjustments for Mobile */
@@ -355,43 +330,42 @@
             font-size: 1.5rem;
         }
         .otp-container {
-            gap: 0.6rem; /* Jarak disesuaikan */
-            margin-bottom: 1.5rem;
+            gap: 0.5rem;
         }
         .otp-input {
-            max-width: 48px !important; /* Dikecilkan sedikit agar pas */
-            font-size: 1.75rem !important; /* Huruf disesuaikan */
-            border-radius: 8px !important;
+            max-width: 55px;
+            font-size: 2.25rem;
+            border-radius: 8px;
         }
         .login-icon {
             font-size: 2.5rem;
         }
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="login-container">
     <!-- Top Section: Logo and Titles (Like Kiosk) -->
-    <div class="header-section animate-fade-in">
+    <div class="header-section animate-fade-in" style="display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; z-index: 10;">
         <!-- Logo -->
-        <div class="header-logo">
-            @if(isset($appSetting) && $appSetting->osim_logo)
-                <img src="{{ asset($appSetting->osim_logo) }}" alt="Logo OSIM" style="width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-            @else
-                <div class="logo-placeholder" style="width: 100%; height: auto; aspect-ratio: 1/1; border-radius: 1rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1);">
-                    <i class="fa-solid fa-shield-halved" style="font-size: 5rem; margin: 0; color: rgba(255,255,255,0.8);"></i>
+        <div class="header-logo" style="width: 100px; flex-shrink: 0;">
+            <?php if(isset($appSetting) && $appSetting->osim_logo): ?>
+                <img src="<?php echo e(asset($appSetting->osim_logo)); ?>" alt="Logo OSIM" style="width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <?php else: ?>
+                <div class="logo-placeholder" style="width: 100px; height: 100px; border-radius: 1rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1);">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 3rem; margin: 0; color: rgba(255,255,255,0.8);"></i>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
         
         <!-- Titles -->
-        <div class="header-text">
-            <h1>{{ $appSetting->header_title ?? 'LOGIN HAK PILIH' }}</h1>
-            <h2>{{ $appSetting->election_title ?? 'Pemilihan Ketua OSIS' }}<br>{{ $appSetting->school_name ?? 'Nama Madrasah Belum Diatur' }}</h2>
-            @if(!empty($appSetting->period))
-                <h3>Periode {{ $appSetting->period }}</h3>
-            @endif
+        <div class="header-text" style="text-align: left; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            <h1 style="margin-bottom: 0.25rem; margin-top: 0; font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;"><?php echo e($appSetting->header_title ?? 'LOGIN HAK PILIH'); ?></h1>
+            <h2 style="margin-top: 0; font-size: 1.2rem; font-weight: 600; line-height: 1.3;"><?php echo e($appSetting->election_title ?? 'Pemilihan Ketua OSIS'); ?><br><?php echo e($appSetting->school_name ?? 'Nama Madrasah Belum Diatur'); ?></h2>
+            <?php if(!empty($appSetting->period)): ?>
+                <h3 style="font-size: 1rem; font-weight: 600; opacity: 0.9; margin-top: 0.25rem; margin-bottom: 0;">Periode <?php echo e($appSetting->period); ?></h3>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -405,20 +379,15 @@
         <a href="javascript:void(0)" class="refresh-btn" onclick="window.location.reload();">
             <i class="fa-solid fa-rotate-right"></i>
         </a>
-        @php
+        <?php
             $loginMethod = $appSetting->login_method ?? 'access_code';
-        @endphp
+        ?>
 
-        <!-- Vote Icon -->
-        <div style="margin-bottom: 1.5rem; color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};">
-            <i class="fa-solid fa-check-to-slot" style="font-size: 3.5rem; filter: drop-shadow(0 4px 6px rgba(45, 184, 166, 0.2));"></i>
-        </div>
-
-        @if($loginMethod === 'username_password')
+        <?php if($loginMethod === 'username_password'): ?>
             <p class="login-subtitle">Masukkan Username dan Password Anda.</p>
             
-            <form action="{{ route('voter.login') }}" method="POST" id="loginFormUserPass">
-                @csrf
+            <form action="<?php echo e(route('voter.login')); ?>" method="POST" id="loginFormUserPass">
+                <?php echo csrf_field(); ?>
                 
                 <div class="minimal-group">
                     <label class="minimal-label">Username</label>
@@ -430,8 +399,8 @@
                 <div class="minimal-group" style="margin-bottom: 2.5rem;">
                     <label class="minimal-label">Password</label>
                     <div class="minimal-input-wrapper">
-                        <input type="password" id="passwordInput" name="password" class="minimal-input" placeholder="Password Anda" style="padding-left: 3rem; padding-right: 3rem;" required>
-                        <button type="button" id="togglePassword" aria-label="Tampilkan Password" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 0.5rem; transition: color 0.3s;">
+                        <input type="password" id="passwordInput" name="password" class="minimal-input" placeholder="Password Anda" style="padding-right: 2.5rem;" required>
+                        <button type="button" id="togglePassword" aria-label="Tampilkan Password" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 0.5rem; transition: color 0.3s;">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
@@ -439,11 +408,11 @@
                 
                 <button type="submit" class="btn-submit tag-akses-kode">Masuk</button>
             </form>
-        @else
+        <?php else: ?>
             <p class="login-subtitle">Masukkan kode verifikasi unik yang diberikan oleh panitia pemilihan.</p>
             
-            <form action="{{ route('voter.login') }}" method="POST" id="loginForm">
-                @csrf
+            <form action="<?php echo e(route('voter.login')); ?>" method="POST" id="loginForm">
+                <?php echo csrf_field(); ?>
                 
                 <input type="hidden" name="access_code" id="accessCodeHidden">
                 
@@ -463,12 +432,12 @@
                 
                 <button type="submit" class="btn-submit tag-akses-kode" id="btnSubmitOTP" disabled>Verifikasi & Masuk</button>
             </form>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const inputs = document.querySelectorAll('.otp-input');
@@ -589,4 +558,6 @@
         }
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', ['hideNavbar' => true], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\1Laravel\pilkasim\resources\views\auth\voter_login.blade.php ENDPATH**/ ?>

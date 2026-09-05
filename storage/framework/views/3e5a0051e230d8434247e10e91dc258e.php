@@ -1,14 +1,12 @@
-@extends('layouts.app', ['hideNavbar' => true])
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <style>
     body {
         background: linear-gradient(135deg, #1e6e3c 0%, #2f8e52 100%);
-        @if(isset($appSetting) && $appSetting->use_gradient)
-            background: linear-gradient(135deg, {{ $appSetting->theme_color_1 ?? '#2db8a6' }} 0%, {{ $appSetting->theme_color_2 ?? '#1b9282' }} 100%);
-        @else
-            background-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
-        @endif
+        <?php if(isset($appSetting) && $appSetting->use_gradient): ?>
+            background: linear-gradient(135deg, <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?> 0%, <?php echo e($appSetting->theme_color_2 ?? '#1b9282'); ?> 100%);
+        <?php else: ?>
+            background-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;
+        <?php endif; ?>
         margin: 0;
         padding-top: 0 !important;
         height: 100vh;
@@ -32,11 +30,11 @@
         align-items: center;
         min-height: 100vh;
         width: 100%;
-        @if(isset($appSetting) && $appSetting->use_gradient)
-            background: linear-gradient(135deg, {{ $appSetting->theme_color_1 ?? '#2db8a6' }} 0%, {{ $appSetting->theme_color_2 ?? '#1b9282' }} 100%);
-        @else
-            background-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
-        @endif
+        <?php if(isset($appSetting) && $appSetting->use_gradient): ?>
+            background: linear-gradient(135deg, <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?> 0%, <?php echo e($appSetting->theme_color_2 ?? '#1b9282'); ?> 100%);
+        <?php else: ?>
+            background-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;
+        <?php endif; ?>
         padding: 2rem;
         position: relative;
         z-index: 10;
@@ -180,7 +178,7 @@
 
     .login-icon {
         font-size: 3.5rem;
-        color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }};
+        color: <?php echo e($appSetting->theme_color_3 ?? '#f59e0b'); ?>;
         margin-bottom: 0.5rem;
         margin-top: 1rem;
     }
@@ -229,7 +227,7 @@
     .otp-input:focus {
         outline: none !important;
         background-color: #ffffff !important;
-        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }} !important;
+        border-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?> !important;
         box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1) !important;
     }
     
@@ -246,7 +244,7 @@
     }
     
     .btn-submit {
-        background: linear-gradient(135deg, {{ $appSetting->theme_color_1 ?? '#2db8a6' }}, {{ $appSetting->theme_color_2 ?? '#1c8c7d' }});
+        background: linear-gradient(135deg, <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>, <?php echo e($appSetting->theme_color_2 ?? '#1c8c7d'); ?>);
         color: #ffffff;
         border: none;
         padding: 0.65rem 1rem;
@@ -302,7 +300,7 @@
     }
 
     .minimal-input:focus {
-        border-color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }} !important;
+        border-color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?> !important;
         background-color: #ffffff !important;
         box-shadow: 0 0 0 4px rgba(45, 184, 166, 0.1) !important;
     }
@@ -343,7 +341,7 @@
     }
     
     .input-action-btn:hover {
-        color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};
+        color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;
     }
     
     /* Responsive Adjustments for Mobile */
@@ -368,30 +366,30 @@
         }
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="login-container">
     <!-- Top Section: Logo and Titles (Like Kiosk) -->
     <div class="header-section animate-fade-in">
         <!-- Logo -->
         <div class="header-logo">
-            @if(isset($appSetting) && $appSetting->osim_logo)
-                <img src="{{ asset($appSetting->osim_logo) }}" alt="Logo OSIM" style="width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-            @else
+            <?php if(isset($appSetting) && $appSetting->osim_logo): ?>
+                <img src="<?php echo e(asset($appSetting->osim_logo)); ?>" alt="Logo OSIM" style="width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <?php else: ?>
                 <div class="logo-placeholder" style="width: 100%; height: auto; aspect-ratio: 1/1; border-radius: 1rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1);">
                     <i class="fa-solid fa-shield-halved" style="font-size: 5rem; margin: 0; color: rgba(255,255,255,0.8);"></i>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
         
         <!-- Titles -->
         <div class="header-text">
-            <h1>{{ $appSetting->header_title ?? 'LOGIN HAK PILIH' }}</h1>
-            <h2>{{ $appSetting->election_title ?? 'Pemilihan Ketua OSIS' }}<br>{{ $appSetting->school_name ?? 'Nama Madrasah Belum Diatur' }}</h2>
-            @if(!empty($appSetting->period))
-                <h3>Periode {{ $appSetting->period }}</h3>
-            @endif
+            <h1><?php echo e($appSetting->header_title ?? 'LOGIN HAK PILIH'); ?></h1>
+            <h2><?php echo e($appSetting->election_title ?? 'Pemilihan Ketua OSIS'); ?><br><?php echo e($appSetting->school_name ?? 'Nama Madrasah Belum Diatur'); ?></h2>
+            <?php if(!empty($appSetting->period)): ?>
+                <h3>Periode <?php echo e($appSetting->period); ?></h3>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -405,20 +403,20 @@
         <a href="javascript:void(0)" class="refresh-btn" onclick="window.location.reload();">
             <i class="fa-solid fa-rotate-right"></i>
         </a>
-        @php
+        <?php
             $loginMethod = $appSetting->login_method ?? 'access_code';
-        @endphp
+        ?>
 
         <!-- Vote Icon -->
-        <div style="margin-bottom: 1.5rem; color: {{ $appSetting->theme_color_1 ?? '#2db8a6' }};">
+        <div style="margin-bottom: 1.5rem; color: <?php echo e($appSetting->theme_color_1 ?? '#2db8a6'); ?>;">
             <i class="fa-solid fa-check-to-slot" style="font-size: 3.5rem; filter: drop-shadow(0 4px 6px rgba(45, 184, 166, 0.2));"></i>
         </div>
 
-        @if($loginMethod === 'username_password')
+        <?php if($loginMethod === 'username_password'): ?>
             <p class="login-subtitle">Masukkan Username dan Password Anda.</p>
             
-            <form action="{{ route('voter.login') }}" method="POST" id="loginFormUserPass">
-                @csrf
+            <form action="<?php echo e(route('voter.login')); ?>" method="POST" id="loginFormUserPass">
+                <?php echo csrf_field(); ?>
                 
                 <div class="minimal-group">
                     <label class="minimal-label">Username</label>
@@ -439,11 +437,11 @@
                 
                 <button type="submit" class="btn-submit tag-akses-kode">Masuk</button>
             </form>
-        @else
+        <?php else: ?>
             <p class="login-subtitle">Masukkan kode verifikasi unik yang diberikan oleh panitia pemilihan.</p>
             
-            <form action="{{ route('voter.login') }}" method="POST" id="loginForm">
-                @csrf
+            <form action="<?php echo e(route('voter.login')); ?>" method="POST" id="loginForm">
+                <?php echo csrf_field(); ?>
                 
                 <input type="hidden" name="access_code" id="accessCodeHidden">
                 
@@ -463,12 +461,12 @@
                 
                 <button type="submit" class="btn-submit tag-akses-kode" id="btnSubmitOTP" disabled>Verifikasi & Masuk</button>
             </form>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const inputs = document.querySelectorAll('.otp-input');
@@ -589,4 +587,6 @@
         }
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', ['hideNavbar' => true], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\1Laravel\pilkasim\resources\views/auth/voter_login.blade.php ENDPATH**/ ?>
