@@ -57,13 +57,76 @@
         font-weight: 700;
         letter-spacing: 1px;
     }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 250px;
+        box-shadow: var(--shadow-lg);
+        z-index: 1;
+        border-radius: var(--radius);
+        overflow: hidden;
+        right: 0;
+        top: 100%;
+        margin-top: 0.5rem;
+        border: 1px solid var(--border);
+    }
+
+    .dropdown-content form {
+        display: block;
+    }
+
+    .dropdown-content button {
+        color: var(--text-main);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        text-align: left;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+    }
+
+    .dropdown-content button:hover {
+        background-color: #f3f4f6;
+    }
+
+    .dropdown:hover .dropdown-content, .dropdown:focus-within .dropdown-content {
+        display: block;
+    }
 </style>
 @endsection
 
 @section('content')
 <div class="header-flex animate-fade-in">
     <h2>Daftar Pemilih (Siswa) & Kode Akses</h2>
-    <div style="display: flex; gap: 0.5rem; align-items: center;">
+    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+        <div class="dropdown">
+            <button class="btn" style="background-color: #10B981;"><i class="fa-solid fa-key"></i> Generate Kode</button>
+            <div class="dropdown-content">
+                <form action="{{ route('admin.voters.generate_codes') }}" method="POST" onsubmit="return confirm('Generate kode akses otomatis untuk pemilih yang belum punya?');">
+                    @csrf
+                    <input type="hidden" name="type" value="student">
+                    <button type="submit"><i class="fa-solid fa-magic"></i> Generate untuk yang kosong</button>
+                </form>
+                <form action="{{ route('admin.voters.generate_codes') }}" method="POST" onsubmit="return confirm('PERINGATAN: Ini akan mereset dan mengganti SEMUA kode akses siswa menjadi baru. Lanjutkan?');">
+                    @csrf
+                    <input type="hidden" name="type" value="student">
+                    <input type="hidden" name="force_all" value="1">
+                    <button type="submit" style="color: #DC2626;"><i class="fa-solid fa-rotate"></i> Regenerate Semua Kode</button>
+                </form>
+            </div>
+        </div>
         <button onclick="document.getElementById('addModal').style.display='block'" class="btn"><i class="fa-solid fa-plus"></i> Tambah</button>
         <button onclick="document.getElementById('importModal').style.display='block'" class="btn" style="background-color: var(--secondary);"><i class="fa-solid fa-file-excel"></i> Import</button>
         <a href="{{ route('admin.voters.print', ['type' => 'student']) }}" target="_blank" class="btn" style="background-color: #6366f1;"><i class="fa-solid fa-print"></i> Cetak Kartu</a>
@@ -113,10 +176,14 @@
                         <span class="status-badge status-pending"><i class="fa-solid fa-clock"></i> Belum</span>
                     @endif
                 </td>
-                <td>
+                <td style="display: flex; gap: 0.25rem;">
                     <form action="{{ route('admin.voters.reset', $voter->id) }}" method="POST" onsubmit="return confirm('Reset status pemilihan siswa ini?');">
                         @csrf
                         <button type="submit" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-rotate-left"></i> Reset Status</button>
+                    </form>
+                    <form action="{{ route('admin.voters.regenerate_single', $voter->id) }}" method="POST" onsubmit="return confirm('Generate ulang kode akses untuk siswa ini?');">
+                        @csrf
+                        <button type="submit" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background-color: #10B981;"><i class="fa-solid fa-key"></i> Generate</button>
                     </form>
                 </td>
             </tr>

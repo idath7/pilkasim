@@ -53,6 +53,28 @@
         background-color: #f3f4f6;
     }
 
+    .refresh-btn {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #111827;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+        background: none;
+    }
+    
+    .refresh-btn:hover {
+        background-color: #f3f4f6;
+    }
+
     .login-icon {
         font-size: 3.5rem;
         color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }};
@@ -208,6 +230,11 @@
             <i class="fa-solid fa-chevron-left"></i>
         </a>
         
+        <!-- Refresh Button -->
+        <a href="javascript:void(0)" class="refresh-btn" onclick="window.location.reload();">
+            <i class="fa-solid fa-rotate-right"></i>
+        </a>
+        
         <i class="fa-solid fa-check-to-slot login-icon tag-logo-icon"></i>
 
         @php
@@ -330,10 +357,23 @@
         function updateHiddenInput() {
             if (!hiddenInput) return;
             let code = '';
+            let allFilled = true;
             inputs.forEach(input => {
                 code += input.value;
+                if (input.value === '') {
+                    allFilled = false;
+                }
             });
             hiddenInput.value = code;
+
+            const btnSubmit = document.getElementById('btnSubmitOTP');
+            if (btnSubmit) {
+                if (allFilled && code.length === 8) {
+                    btnSubmit.removeAttribute('disabled');
+                } else {
+                    btnSubmit.setAttribute('disabled', 'disabled');
+                }
+            }
         }
 
         if (form) {

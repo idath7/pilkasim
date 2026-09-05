@@ -76,7 +76,7 @@ class AdminController extends Controller
             'name' => $request->name,
             'class_name' => $request->class_name,
             'gender' => $request->gender,
-            'access_code' => $request->filled('access_code') ? strtoupper($request->access_code) : strtoupper(Str::random(6)),
+            'access_code' => $request->filled('access_code') ? strtoupper($request->access_code) : strtoupper(Str::random(8)),
             'has_voted' => false,
         ];
 
@@ -108,6 +108,42 @@ class AdminController extends Controller
         ]);
         
         return back()->with('success', 'Status pemilihan siswa berhasil direset (Suara kandidat otomatis dikurangi).');
+    }
+
+    public function generateAccessCodes(Request $request)
+    {
+        $type = $request->input('type', 'student');
+        $forceAll = $request->input('force_all', false); // true means replace existing codes
+        
+        $query = Voter::where('type', $type);
+        
+        if (!$forceAll) {
+            $query->where(function($q) {
+                $q->whereNull('access_code')
+                  ->orWhere('access_code', '')
+                  ->orWhereRaw('LENGTH(access_code) < 8');
+            });
+        }
+        
+        $voters = $query->get();
+        $count = 0;
+        
+        foreach ($voters as $voter) {
+            $voter->access_code = strtoupper(Str::random(8));
+            $voter->save();
+            $count++;
+        }
+        
+        return back()->with('success', "Berhasil me-generate {$count} kode akses (8 karakter) untuk tipe {$type}.");
+    }
+
+    public function regenerateSingleCode($id)
+    {
+        $voter = Voter::findOrFail($id);
+        $voter->access_code = strtoupper(Str::random(8));
+        $voter->save();
+        
+        return back()->with('success', "Berhasil membuat kode akses baru untuk pemilih: {$voter->name}");
     }
 
     public function resetAllVoters()
