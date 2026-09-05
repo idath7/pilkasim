@@ -143,7 +143,7 @@
                             <i class="fa-solid fa-edit"></i>
                         </button>
                         @if(auth('admin')->id() !== $user->id)
-                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="confirmAction(event, 'Apakah Anda yakin ingin menghapus akun ini?');">
                             @csrf
                             <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.75rem; font-size: 0.875rem;">
                                 <i class="fa-solid fa-trash"></i>

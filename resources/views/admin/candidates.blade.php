@@ -96,7 +96,7 @@
         <div class="card candidate-card" style="position: relative;">
             <div class="candidate-actions" style="position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 10;">
                 <button onclick="openEditModal({{ $candidate->id }}, '{{ addslashes($candidate->name) }}', '{{ addslashes($candidate->class_name) }}', '{{ addslashes($candidate->organization) }}', `{{ base64_encode($candidate->vision) }}`, `{{ base64_encode($candidate->mission) }}`)" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background-color: rgba(255,255,255,0.9); color: var(--primary);"><i class="fa-solid fa-pen"></i> Edit</button>
-                <form action="{{ route('admin.candidates.destroy', $candidate->id) }}" method="POST" id="delete-form-{{ $candidate->id }}">
+                <form id="delete-form-{{ $candidate->id }}" action="{{ route('admin.candidates.destroy', $candidate->id) }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="button" onclick="confirmDelete({{ $candidate->id }}, '{{ addslashes($candidate->name) }}')" class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background-color: #ef4444; color: white; border: none;"><i class="fa-solid fa-trash"></i> Hapus</button>
                 </form>
@@ -399,5 +399,22 @@
             document.getElementById('custom-options').style.display = 'none';
         }
     });
+
+    function confirmDelete(id, name) {
+        Swal.fire({
+            title: 'Hapus Kandidat?',
+            text: `Anda yakin ingin menghapus kandidat ${name}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
 </script>
 @endsection

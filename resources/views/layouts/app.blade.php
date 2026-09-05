@@ -27,7 +27,11 @@
         @foreach($faviconSetting->dynamic_color_tags as $tagData)
             @if(!empty($tagData['tag']))
             .{{ $tagData['tag'] }} { 
-                background-color: {{ $tagData['bg_color'] ?? 'transparent' }} !important; 
+                @if(!empty($tagData['is_gradient']))
+                background: linear-gradient(135deg, {{ $tagData['bg_color'] ?? 'transparent' }}, {{ $tagData['bg_color_2'] ?? $tagData['bg_color'] ?? 'transparent' }}) !important; 
+                @else
+                background: {{ $tagData['bg_color'] ?? 'transparent' }} !important; 
+                @endif
                 color: {{ $tagData['text_color'] ?? 'inherit' }} !important; 
             }
             .text-{{ $tagData['tag'] }} { color: {{ $tagData['text_color'] ?? 'inherit' }} !important; }
@@ -174,6 +178,110 @@
             gap: 0.5rem;
         }
 
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--surface);
+            min-width: 160px;
+            box-shadow: var(--shadow-lg);
+            border-radius: 8px;
+            z-index: 100;
+            top: 100%;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .dropdown-content.dropdown-right {
+            right: 0;
+        }
+
+        .dropdown-content a {
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #F9FAFB;
+            color: var(--primary);
+        }
+
+        .dropdown:hover .dropdown-content,
+        .dropdown.open .dropdown-content {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-wrap: wrap;
+                gap: 1rem;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .hamburger-btn {
+                display: block;
+            }
+            .topbar-menu {
+                width: 100%;
+                display: none !important;
+                flex-direction: column;
+                align-items: stretch !important;
+                order: 3;
+                gap: 0.25rem !important;
+            }
+            .topbar-menu.show {
+                display: flex !important;
+                animation: fadeIn 0.3s ease-out;
+            }
+            .nav-link {
+                white-space: normal;
+                display: block;
+                width: 100%;
+            }
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                border: none;
+                padding-left: 1rem;
+                background: rgba(0,0,0,0.02);
+            }
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -190,15 +298,57 @@
 <body>
     @if(!isset($hideNavbar))
     <nav class="navbar">
-        <a href="#" class="navbar-brand">
+        <a href="{{ auth('admin')->check() ? route('admin.dashboard') : '#' }}" class="navbar-brand">
             <i class="fa-solid fa-check-to-slot"></i> e-Pilkasim
         </a>
-        <div>
+        
+        @if(auth('admin')->check())
+        <div class="topbar-menu" id="mobile-menu" style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            
+            @if(auth('admin')->user()->role !== 'pembina')
+                <div class="dropdown">
+                    <a href="#" class="nav-link {{ request()->routeIs('admin.voters') || request()->routeIs('admin.teachers') ? 'active' : '' }}" onclick="event.preventDefault(); this.parentElement.classList.toggle('open');"><i class="fa-solid fa-users"></i> Pemilih <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; margin-left: 2px;"></i></a>
+                    <div class="dropdown-content">
+                        <a href="{{ route('admin.voters') }}"><i class="fa-solid fa-user-graduate" style="width: 20px;"></i> Siswa</a>
+                        <a href="{{ route('admin.teachers') }}"><i class="fa-solid fa-chalkboard-user" style="width: 20px;"></i> Guru</a>
+                    </div>
+                </div>
+                <a href="{{ route('admin.candidates') }}" class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}"><i class="fa-solid fa-user-tie"></i> Kandidat</a>
+            @endif
+            
+            @if(auth('admin')->user()->role === 'admin')
+                <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}"><i class="fa-solid fa-gear"></i> Pengaturan</a>
+                <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}"><i class="fa-solid fa-user-shield"></i> Petugas</a>
+            @endif
+        </div>
+        @endif
+
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
             @if(session('voter_id'))
                 <form action="{{ route('voter.logout') }}" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.875rem;">Keluar</button>
+                    <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.875rem;"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
                 </form>
+            @elseif(auth('admin')->check())
+                <div class="dropdown">
+                    <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;" onclick="this.parentElement.classList.toggle('open');">
+                        <i class="fa-solid fa-circle-user"></i> {{ ucfirst(auth('admin')->user()->username) }} <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i>
+                    </button>
+                    <div class="dropdown-content dropdown-right">
+                        @if(auth('admin')->user()->role === 'admin')
+                            <a href="#" onclick="showChangePasswordModal()"><i class="fa-solid fa-key" style="width: 20px;"></i> Ganti Password</a>
+                        @endif
+                        <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0; padding: 0;">
+                            @csrf
+                            <button type="submit" style="width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1rem; cursor: pointer; color: #EF4444; font-size: 1rem;"><i class="fa-solid fa-right-from-bracket" style="width: 20px;"></i> Keluar</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <button class="hamburger-btn" onclick="document.getElementById('mobile-menu').classList.toggle('show')">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
             @endif
         </div>
     </nav>
@@ -278,6 +428,25 @@
                     form.appendChild(pwd);
 
                     document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const form = event.target;
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
                     form.submit();
                 }
             });

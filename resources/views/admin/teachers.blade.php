@@ -114,12 +114,12 @@
         <div class="dropdown">
             <button class="btn" style="background-color: #10B981;"><i class="fa-solid fa-key"></i> Generate Kode</button>
             <div class="dropdown-content">
-                <form action="{{ route('admin.voters.generate_codes') }}" method="POST" onsubmit="return confirm('Generate kode akses otomatis untuk pemilih yang belum punya?');">
+                <form action="{{ route('admin.voters.generate_codes') }}" method="POST" onsubmit="confirmAction(event, 'Generate kode akses otomatis untuk pemilih yang belum punya?');">
                     @csrf
                     <input type="hidden" name="type" value="teacher">
                     <button type="submit"><i class="fa-solid fa-magic"></i> Generate untuk yang kosong</button>
                 </form>
-                <form action="{{ route('admin.voters.generate_codes') }}" method="POST" onsubmit="return confirm('PERINGATAN: Ini akan mereset dan mengganti SEMUA kode akses guru menjadi baru. Lanjutkan?');">
+                <form action="{{ route('admin.voters.generate_codes') }}" method="POST" onsubmit="confirmAction(event, 'PERINGATAN: Ini akan mereset dan mengganti SEMUA kode akses guru menjadi baru. Lanjutkan?');">
                     @csrf
                     <input type="hidden" name="type" value="teacher">
                     <input type="hidden" name="force_all" value="1">
@@ -130,11 +130,11 @@
         <button onclick="document.getElementById('addModal').style.display='block'" class="btn"><i class="fa-solid fa-plus"></i> Tambah</button>
         <button onclick="document.getElementById('importModal').style.display='block'" class="btn" style="background-color: var(--secondary);"><i class="fa-solid fa-file-excel"></i> Import</button>
         <a href="{{ route('admin.voters.print', ['type' => 'teacher']) }}" target="_blank" class="btn" style="background-color: #6366f1;"><i class="fa-solid fa-print"></i> Cetak Kartu</a>
-        <form action="{{ route('admin.voters.reset_votes') }}" method="POST" onsubmit="return confirm('Hasil perolehan suara akan dikosongkan dan status memilih akan direset. Anda yakin?');" style="display:inline;">
+        <form action="{{ route('admin.voters.reset_votes') }}" method="POST" onsubmit="confirmAction(event, 'Hasil perolehan suara akan dikosongkan dan status memilih akan direset. Anda yakin?');" style="display:inline;">
             @csrf
             <button type="submit" class="btn btn-danger" style="background-color: #f59e0b;"><i class="fa-solid fa-rotate-left"></i> Reset Suara</button>
         </form>
-        <form action="{{ route('admin.voters.reset_all') }}" method="POST" onsubmit="return confirm('Peringatan: Seluruh data pemilih (termasuk guru & siswa) akan dihapus dari database! Anda yakin?');" style="display:inline;">
+        <form action="{{ route('admin.voters.reset_all') }}" method="POST" onsubmit="confirmAction(event, 'Peringatan: Seluruh data pemilih (termasuk guru & siswa) akan dihapus dari database! Anda yakin?');" style="display:inline;">
             @csrf
             <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Hapus Semua</button>
         </form>
@@ -177,11 +177,11 @@
                     @endif
                 </td>
                 <td style="display: flex; gap: 0.25rem;">
-                    <form action="{{ route('admin.voters.reset', $voter->id) }}" method="POST" onsubmit="return confirm('Reset status pemilihan guru ini?');">
+                    <form action="{{ route('admin.voters.reset', $voter->id) }}" method="POST" onsubmit="confirmAction(event, 'Reset status pemilihan guru ini?');">
                         @csrf
                         <button type="submit" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-rotate-left"></i> Reset Status</button>
                     </form>
-                    <form action="{{ route('admin.voters.regenerate_single', $voter->id) }}" method="POST" onsubmit="return confirm('Generate ulang kode akses untuk guru ini?');">
+                    <form action="{{ route('admin.voters.regenerate_single', $voter->id) }}" method="POST" onsubmit="confirmAction(event, 'Generate ulang kode akses untuk guru ini?');">
                         @csrf
                         <button type="submit" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background-color: #10B981;"><i class="fa-solid fa-key"></i> Generate</button>
                     </form>

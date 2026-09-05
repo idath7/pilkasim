@@ -140,56 +140,58 @@
 @endsection
 
 @section('content')
-<div class="dashboard-header animate-fade-in">
+<div class="card animate-fade-in dashboard-admin-card" style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;">
+    <!-- Dashboard Header -->
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
         <div>
-            <h2 style="margin: 0;">Dashboard Admin</h2>
-            <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">Halo, {{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
+            <h2 class="dashboard-admin-title" style="margin: 0; color: white;">Dashboard Admin</h2>
+            <p class="dashboard-admin-subtitle" style="margin: 0.25rem 0 0 0; color: rgba(255, 255, 255, 0.9);">Halo, {{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
         </div>
-        <a href="{{ route('admin.dashboard') }}" style="background: transparent; color: var(--primary); border: 1px solid var(--primary); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 72px; line-height: 1; padding: 0; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.background='rgba(79, 70, 229, 0.1)'" onmouseout="this.style.background='transparent'">
-            <div style="font-size: 1.25rem; margin-bottom: 4px;"><i class="fa-solid fa-rotate-right"></i></div>
-            <div style="font-size: 0.75rem; font-weight: normal;">Refresh</div>
+        <a href="{{ route('admin.dashboard') }}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 60px; line-height: 1; padding: 0; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">
+            <div style="font-size: 1.1rem; margin-bottom: 4px;"><i class="fa-solid fa-rotate-right"></i></div>
+            <div style="font-size: 0.7rem; font-weight: normal;">Refresh</div>
         </a>
     </div>
-</div>
 
-@if(auth('admin')->user()->role !== 'pembina')
-<div class="card animate-fade-in" style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-        <div style="flex: 1;">
-            <h3 style="margin-top: 0; color: white;">Link Login & Layar Kiosk</h3>
-            <p style="opacity: 0.9; margin-bottom: 0;">Gunakan fitur Kiosk untuk menampilkan QR Code di layar besar, atau salin link login langsung jika diperlukan.</p>
-        </div>
-        <div class="kiosk-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
-            <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
-                <i class="fa-solid fa-desktop"></i> Buka Kiosk
-            </a>
-            <button onclick="document.getElementById('qrModal').style.display='block'" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
-                <i class="fa-solid fa-qrcode"></i> QR Website
-            </button>
-            <button onclick="copyKioskLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
-                <i class="fa-solid fa-link"></i> Salin Kiosk
-            </button>
-        </div>
-    </div>
-    
-    <div class="token-url-row" style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
-        <div style="flex: 1; font-family: monospace; font-size: 0.85rem; font-weight: bold; overflow-x: auto; white-space: nowrap;" id="dynamic-login-link">
-            Memuat link...
-        </div>
-        <div class="token-actions" style="display: flex; align-items: center; gap: 0.5rem;">
-            <div style="text-align: center; background: rgba(255,255,255,0.2); border-radius: 8px; width: 72px; height: 72px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <div style="font-size: 1.5rem; font-weight: bold; line-height: 1;" id="dynamic-login-timer">30</div>
-                <div style="font-size: 0.75rem; margin-top: 4px;">Detik</div>
+    @if(auth('admin')->user()->role !== 'pembina')
+    <!-- Kiosk Section -->
+    <div style="margin-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div style="flex: 1;">
+                <h3 style="margin-top: 0; color: white;">Link Login & Layar Kiosk</h3>
+                <p style="opacity: 0.9; margin-bottom: 0;">Gunakan fitur Kiosk untuk menampilkan QR Code di layar besar, atau salin link login langsung jika diperlukan.</p>
             </div>
-            <button onclick="copyLoginLink()" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 72px; line-height: 1; padding: 0;">
-                <div style="font-size: 1.25rem; margin-bottom: 4px;"><i class="fa-solid fa-copy"></i></div>
-                <div style="font-size: 0.75rem; font-weight: normal;">Salin</div>
-            </button>
+            <div class="kiosk-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+                <a href="{{ route('kiosk') }}" target="_blank" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
+                    <i class="fa-solid fa-desktop"></i> Buka Kiosk
+                </a>
+                <button onclick="document.getElementById('qrModal').style.display='block'" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
+                    <i class="fa-solid fa-qrcode"></i> QR Website
+                </button>
+                <button onclick="copyKioskLink()" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4);">
+                    <i class="fa-solid fa-link"></i> Salin Kiosk
+                </button>
+            </div>
+        </div>
+        
+        <div class="token-url-row" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0rem; background: rgba(0,0,0,0.2); padding: 0.5rem 0.75rem; border-radius: 8px; max-width: fit-content; margin-left: auto;">
+            <div style="font-family: monospace; font-size: 1.25rem; font-weight: bold; overflow-x: auto; white-space: nowrap; text-align: center; letter-spacing: 2px; padding: 0 0.5rem;" id="dynamic-login-link">
+                Memuat link...
+            </div>
+            <div class="token-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="text-align: center; background: rgba(255,255,255,0.2); border-radius: 8px; width: 60px; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="font-size: 1.25rem; font-weight: bold; line-height: 1;" id="dynamic-login-timer">30</div>
+                    <div style="font-size: 0.7rem; margin-top: 2px;">Detik</div>
+                </div>
+                <button onclick="copyLoginLink()" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 60px; line-height: 1; padding: 0;">
+                    <div style="font-size: 1rem; margin-bottom: 2px;"><i class="fa-solid fa-copy"></i></div>
+                    <div style="font-size: 0.7rem; font-weight: normal;">Salin</div>
+                </button>
+            </div>
         </div>
     </div>
+    @endif
 </div>
-@endif
 
 <div class="stat-grid animate-fade-in" style="animation-delay: 0.1s">
     <div class="card stat-card">
@@ -249,7 +251,7 @@
 <div class="animate-fade-in" style="animation-delay: 0.3s; margin-top: 3rem;">
     <div style="display: flex; align-items: center; text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
         <div style="flex: 1; border-bottom: 1px dashed var(--border);"></div>
-        <span style="padding: 0 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;"><i class="fa-solid fa-compass"></i> Menu Navigasi Admin</span>
+        <span style="padding: 0 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;"><i class="fa-solid fa-bolt"></i> Akses Cepat</span>
         <div style="flex: 1; border-bottom: 1px dashed var(--border);"></div>
     </div>
     
@@ -336,7 +338,7 @@
         fetch('{{ route("kiosk.token") }}')
             .then(res => res.json())
             .then(data => {
-                document.getElementById('dynamic-login-link').innerText = data.url;
+                document.getElementById('dynamic-login-link').innerText = data.token;
                 currentLinkUrl = data.url;
                 startTimer(data.remaining);
             })
