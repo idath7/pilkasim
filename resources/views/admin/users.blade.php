@@ -16,7 +16,7 @@
     }
     
     th, td {
-        padding: 1rem;
+        padding: 0.5rem;
         text-align: left;
         border-bottom: 1px solid var(--border);
     }
@@ -66,7 +66,7 @@
 
     .modal-content {
         background-color: white;
-        padding: 2rem;
+        padding: 1.25rem;
         border-radius: var(--radius);
         width: 100%;
         max-width: 500px;

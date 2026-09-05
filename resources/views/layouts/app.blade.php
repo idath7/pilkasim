@@ -81,7 +81,7 @@
 
         /* Forms & Inputs */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
         }
 
         label {
@@ -141,6 +141,18 @@
         }
 
         /* Minimalist Modal Fields */
+        .modal .card {
+            padding: 1.25rem !important;
+        }
+
+        .modal h3 {
+            margin-bottom: 0.75rem !important;
+            font-size: 1.1rem;
+        }
+
+        .modal .form-group {
+            margin-bottom: 0.75rem !important;
+        }
         .modal input[type="text"],
         .modal input[type="password"],
         .modal input[type="number"],

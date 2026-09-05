@@ -121,7 +121,7 @@ class AdminController extends Controller
     {
         if (auth('admin')->user()->role === 'pembina') abort(403);
         $request->validate([
-            'nis' => 'nullable|string',
+            'nis' => 'nullable|string|unique:voters,nis',
             'name' => 'required|string',
             'class_name' => 'required|string',
             'gender' => 'required|string|in:L,P',
@@ -129,6 +129,10 @@ class AdminController extends Controller
             'username' => 'nullable|string|unique:voters,username',
             'password' => 'nullable|string|min:4',
             'type' => 'nullable|string|in:student,teacher',
+        ], [
+            'nis.unique' => 'NIS/NIP/ID sudah terdaftar pada pemilih lain.',
+            'access_code.unique' => 'Kode Akses sudah digunakan.',
+            'username.unique' => 'Username sudah digunakan.',
         ]);
 
         $voterData = [
@@ -144,6 +148,7 @@ class AdminController extends Controller
         if ($request->filled('username') && $request->filled('password')) {
             $voterData['username'] = $request->username;
             $voterData['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+            $voterData['plain_password'] = $request->password;
         }
 
         Voter::create($voterData);
@@ -157,13 +162,17 @@ class AdminController extends Controller
         $voter = Voter::findOrFail($id);
         
         $request->validate([
-            'nis' => 'nullable|string',
+            'nis' => 'nullable|string|unique:voters,nis,'.$id,
             'name' => 'required|string',
             'class_name' => 'required|string',
             'gender' => 'required|string|in:L,P',
             'access_code' => 'nullable|string|unique:voters,access_code,'.$id,
             'username' => 'nullable|string|unique:voters,username,'.$id,
             'password' => 'nullable|string|min:4',
+        ], [
+            'nis.unique' => 'NIS/NIP/ID sudah terdaftar pada pemilih lain.',
+            'access_code.unique' => 'Kode Akses sudah digunakan.',
+            'username.unique' => 'Username sudah digunakan.',
         ]);
 
         $voterData = [
@@ -185,6 +194,7 @@ class AdminController extends Controller
 
         if ($request->filled('password')) {
             $voterData['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+            $voterData['plain_password'] = $request->password;
         }
 
         $voter->update($voterData);
@@ -360,6 +370,11 @@ class AdminController extends Controller
         try {
             Excel::import(new VoterImport($type), $request->file('file'));
             return back()->with('success', 'Data pemilih (' . ($type == 'teacher' ? 'Guru' : 'Siswa') . ') berhasil diimpor dari Excel.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Gagal mengimpor file: Terdapat NIS/NIP/ID ganda yang sudah terdaftar. Mohon pastikan tidak ada NIS/NIP/ID yang sama di file Excel Anda maupun yang sudah ada di sistem.');
+            }
+            return back()->with('error', 'Gagal mengimpor file: Terjadi kesalahan pada database.');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal mengimpor file: ' . $e->getMessage());
         }

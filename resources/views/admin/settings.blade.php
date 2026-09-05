@@ -63,12 +63,12 @@
     
     .form-section-subtitle {
         color: var(--text-muted);
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         font-size: 0.85rem;
     }
 
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.75rem;
     }
     
 

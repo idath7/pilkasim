@@ -22,7 +22,7 @@
     }
     
     th, td {
-        padding: 0.75rem 1rem;
+        padding: 0.4rem 0.5rem;
         text-align: left;
         border-bottom: 1px solid var(--border);
     }
@@ -208,16 +208,20 @@
 </div>
 
 <div class="page-container animate-fade-in" style="animation-delay: 0.1s;">
-    <!-- Sidebar Aksi -->
-    <div class="page-sidebar" style="background: #fff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border); height: fit-content;">
-        <h3 onclick="toggleActionSidebar()" style="font-size: 1rem; margin: 0; color: var(--text-main); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none;">
-            <div><i class="fa-solid fa-layer-group" style="color: var(--primary); margin-right: 0.5rem;"></i> Aksi Pemilih</div>
-            <i class="fa-solid fa-chevron-down" id="actionSidebarIcon" style="transition: transform 0.3s; font-size: 0.8rem; color: var(--text-muted);"></i>
-        </h3>
+    <!-- Floating Sidebar Aksi -->
+    <div id="floatingActionSidebar" style="position: fixed; top: 50%; left: -300px; transform: translateY(-50%); width: 280px; background: #fff; padding: 1.5rem; border-radius: 0 12px 12px 0; border: 1px solid var(--border); border-left: none; box-shadow: 5px 0 25px rgba(0,0,0,0.1); z-index: 100; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
         
-        <div id="actionSidebarContent" style="display: none; flex-direction: column; gap: 0.75rem; margin-top: 1.25rem;">
+        <!-- Tab Toggle Vertikal -->
+        <div onclick="toggleActionSidebar()" style="position: absolute; right: -40px; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; padding: 1rem 0; width: 40px; height: 160px; border-radius: 0 12px 12px 0; cursor: pointer; writing-mode: vertical-rl; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px; box-shadow: 4px 0 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s; user-select: none;">
+            <i class="fa-solid fa-chevron-right" id="actionSidebarIcon" style="transition: transform 0.3s; font-size: 0.8rem; margin-bottom: 0.5rem; transform: rotate(0deg);"></i>
+            Aksi Pemilih
+        </div>
+        
+        <h3 style="font-size: 1.1rem; margin: 0 0 1.25rem 0; color: var(--text-main); font-weight: 700;"><i class="fa-solid fa-layer-group" style="color: var(--primary); margin-right: 0.5rem;"></i> Menu Aksi</h3>
+        
+        <div id="actionSidebarContent" style="display: flex; flex-direction: column; gap: 0.75rem;">
             <div class="action-dropdown" style="width: 100%;">
-            <button class="btn" style="background-color: transparent; color: var(--text-main); width: 100%; display: flex; justify-content: flex-start; align-items: center; gap: 0.75rem; border-radius: 8px; font-weight: 500; border: 1px solid transparent; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#f1f5f9'" onmouseout="this.style.backgroundColor='transparent'"><i class="fa-solid fa-key" style="width: 20px; color: #10B981;"></i> Generate Kode <i class="fa-solid fa-chevron-down" style="margin-left: auto; font-size: 0.7rem; color: var(--text-muted);"></i></button>
+            <button class="btn" style="background-color: transparent; color: var(--text-main); width: 100%; display: flex; justify-content: flex-start; align-items: center; gap: 0.75rem; border-radius: 8px; font-weight: 500; border: 1px solid transparent; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#f1f5f9'" onmouseout="this.style.backgroundColor='transparent'"><i class="fa-solid fa-key" style="width: 20px; color: #10B981;"></i> Generate Kode <i class="fa-solid fa-chevron-down" style="margin-left: auto; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.3s; transform: rotate(-90deg);"></i></button>
             <div class="action-dropdown-content" style="width: 100%; top: 100%; margin-top: 0.5rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                 <form action="{{ route('admin.voters.generate_codes') }}" method="POST" onsubmit="confirmAction(event, 'Generate kode akses otomatis untuk pemilih yang belum punya?');">
                     @csrf
@@ -318,7 +322,7 @@
 
 <!-- Modal Tambah Manual -->
 <div id="addModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+    <div class="card" style="margin: 2rem auto; width: 90%; max-width: 500px; position:relative;">
         <span onclick="document.getElementById('addModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Tambah Pemilih (Guru) Manual</h3>
         <form action="{{ route('admin.voters.store') }}" method="POST">
@@ -354,7 +358,7 @@
 
 <!-- Modal Edit Manual -->
 <div id="editModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+    <div class="card" style="margin: 2rem auto; width: 90%; max-width: 500px; position:relative;">
         <span onclick="document.getElementById('editModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Edit Data Guru</h3>
         <form id="editForm" action="" method="POST">
@@ -394,7 +398,7 @@
 
 <!-- Modal Import -->
 <div id="importModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+    <div class="card" style="margin: 2rem auto; width: 90%; max-width: 500px; position:relative;">
         <span onclick="document.getElementById('importModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Import Data Excel</h3>
         
@@ -526,13 +530,14 @@
     }
 
     function toggleActionSidebar() {
-        const content = document.getElementById('actionSidebarContent');
+        const sidebar = document.getElementById('floatingActionSidebar');
         const icon = document.getElementById('actionSidebarIcon');
-        if (content.style.display === 'none') {
-            content.style.display = 'flex';
+        
+        if (sidebar.style.left === '-300px' || sidebar.style.left === '') {
+            sidebar.style.left = '0px';
             icon.style.transform = 'rotate(180deg)';
         } else {
-            content.style.display = 'none';
+            sidebar.style.left = '-300px';
             icon.style.transform = 'rotate(0deg)';
         }
     }

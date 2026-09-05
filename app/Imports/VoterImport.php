@@ -35,20 +35,22 @@ class VoterImport implements ToModel, WithBatchInserts, WithChunkReading
         }
 
         $username = isset($row[4]) && trim($row[4]) !== '' ? trim($row[4]) : null;
-        $password = isset($row[5]) && trim($row[5]) !== '' ? \Illuminate\Support\Facades\Hash::make(trim($row[5]), ['rounds' => 4]) : null;
+        $rawPassword = isset($row[5]) && trim($row[5]) !== '' ? trim($row[5]) : null;
+        $password = $rawPassword ? \Illuminate\Support\Facades\Hash::make($rawPassword, ['rounds' => 4]) : null;
 
         $accessCode = isset($row[6]) && trim($row[6]) !== '' ? strtoupper(trim($row[6])) : strtoupper(\Illuminate\Support\Str::random(8));
 
         return new Voter([
-            'type'        => $this->type,
-            'nis'         => $row[0] ?? null,
-            'name'        => $row[1],
-            'class_name'  => $row[2] ?? '-',
-            'gender'      => strtoupper($row[3] ?? 'L'),
-            'access_code' => $accessCode,
-            'username'    => $username,
-            'password'    => $password,
-            'has_voted'   => false,
+            'type'           => $this->type,
+            'nis'            => $row[0] ?? null,
+            'name'           => $row[1],
+            'class_name'     => $row[2] ?? '-',
+            'gender'         => strtoupper($row[3] ?? 'L'),
+            'access_code'    => $accessCode,
+            'username'       => $username,
+            'password'       => $password,
+            'plain_password' => $rawPassword,
+            'has_voted'      => false,
         ]);
     }
 }

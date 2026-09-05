@@ -22,7 +22,7 @@
     }
     
     th, td {
-        padding: 0.75rem 1rem;
+        padding: 0.4rem 0.5rem;
         text-align: left;
         border-bottom: 1px solid var(--border);
     }
@@ -326,7 +326,7 @@
 
 <!-- Modal Tambah Manual -->
 <div id="addModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+    <div class="card" style="margin: 2rem auto; width: 90%; max-width: 500px; position:relative;">
         <span onclick="document.getElementById('addModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Tambah Pemilih Manual</h3>
         <form action="{{ route('admin.voters.store') }}" method="POST">
@@ -361,7 +361,7 @@
 
 <!-- Modal Edit Manual -->
 <div id="editModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+    <div class="card" style="margin: 2rem auto; width: 90%; max-width: 500px; position:relative;">
         <span onclick="document.getElementById('editModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Edit Data Pemilih</h3>
         <form id="editForm" action="" method="POST">
@@ -398,7 +398,7 @@
 
 <!-- Modal Import -->
 <div id="importModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div class="card" style="margin: 5% auto; width: 90%; max-width: 500px; position:relative;">
+    <div class="card" style="margin: 2rem auto; width: 90%; max-width: 500px; position:relative;">
         <span onclick="document.getElementById('importModal').style.display='none'" style="position:absolute; right:1.5rem; top:1.5rem; cursor:pointer; font-size:1.5rem;">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Import Data Excel</h3>
         

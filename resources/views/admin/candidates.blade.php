@@ -58,8 +58,8 @@
     
     .modal-content {
         background-color: var(--surface);
-        margin: 5% auto;
-        padding: 2rem;
+        margin: 2rem auto;
+        padding: 1.25rem;
         border-radius: var(--radius);
         max-width: 600px;
         position: relative;
