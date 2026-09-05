@@ -208,11 +208,10 @@ class AdminController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string',
-            'chairman_name' => 'nullable|string',
-            'vice_chairman_name' => 'nullable|string',
+            'class_name' => 'nullable|string',
+            'organization' => 'nullable|string',
             'vision' => 'nullable|string',
             'mission' => 'nullable|string',
-            'order_number' => 'required|integer',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
@@ -231,11 +230,10 @@ class AdminController extends Controller
 
         $data = $request->validate([
             'name' => 'required|string',
-            'chairman_name' => 'nullable|string',
-            'vice_chairman_name' => 'nullable|string',
+            'class_name' => 'nullable|string',
+            'organization' => 'nullable|string',
             'vision' => 'nullable|string',
             'mission' => 'nullable|string',
-            'order_number' => 'required|integer',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
@@ -368,7 +366,11 @@ class AdminController extends Controller
             return '/storage/' . $file->store($folder, 'public');
         }
 
-        $filename = \Illuminate\Support\Str::random(40) . '.jpg';
+        $extension = $file->extension();
+        if (!in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'webp'])) {
+            $extension = 'jpg';
+        }
+        $filename = \Illuminate\Support\Str::random(40) . '.' . strtolower($extension);
         $path = storage_path('app/public/' . $folder);
         if (!file_exists($path)) {
             mkdir($path, 0755, true);
@@ -390,6 +392,11 @@ class AdminController extends Controller
             return '/storage/' . $file->store($folder, 'public');
         }
 
+        if ($mime == 'image/png' || $mime == 'image/webp') {
+            imagealphablending($image, false);
+            imagesavealpha($image, true);
+        }
+
         $width = imagesx($image);
         $height = imagesy($image);
 
@@ -399,16 +406,29 @@ class AdminController extends Controller
             
             $tmpImage = imagecreatetruecolor($newWidth, $newHeight);
             
-            // Handle transparency to white
-            $white = imagecolorallocate($tmpImage, 255, 255, 255);
-            imagefill($tmpImage, 0, 0, $white);
+            if ($mime == 'image/png' || $mime == 'image/webp') {
+                imagealphablending($tmpImage, false);
+                imagesavealpha($tmpImage, true);
+                $transparent = imagecolorallocatealpha($tmpImage, 255, 255, 255, 127);
+                imagefill($tmpImage, 0, 0, $transparent);
+            } else {
+                $white = imagecolorallocate($tmpImage, 255, 255, 255);
+                imagefill($tmpImage, 0, 0, $white);
+            }
             
             imagecopyresampled($tmpImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
             imagedestroy($image);
             $image = $tmpImage;
         }
 
-        imagejpeg($image, $fullPath, 75); // Compress quality 75%
+        if ($mime == 'image/png') {
+            imagepng($image, $fullPath, 8);
+        } elseif ($mime == 'image/webp') {
+            imagewebp($image, $fullPath, 80);
+        } else {
+            imagejpeg($image, $fullPath, 80);
+        }
+        
         imagedestroy($image);
 
         return '/storage/' . $folder . '/' . $filename;

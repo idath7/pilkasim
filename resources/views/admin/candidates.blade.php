@@ -94,14 +94,17 @@
 <div class="candidates-grid animate-fade-in" style="animation-delay: 0.1s;">
     @foreach($candidates as $candidate)
         <div class="card candidate-card" style="position: relative;">
-            <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 10;">
+            <div class="candidate-actions" style="position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 10;">
                 <button onclick="openEditModal({{ $candidate->id }}, '{{ addslashes($candidate->name) }}', '{{ addslashes($candidate->class_name) }}', '{{ addslashes($candidate->organization) }}', `{{ base64_encode($candidate->vision) }}`, `{{ base64_encode($candidate->mission) }}`)" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background-color: rgba(255,255,255,0.9); color: var(--primary);"><i class="fa-solid fa-pen"></i> Edit</button>
                 <form action="{{ route('admin.candidates.destroy', $candidate->id) }}" method="POST" id="delete-form-{{ $candidate->id }}">
                     @csrf
                     <button type="button" onclick="confirmDelete({{ $candidate->id }}, '{{ addslashes($candidate->name) }}')" class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; background-color: #ef4444; color: white; border: none;"><i class="fa-solid fa-trash"></i> Hapus</button>
                 </form>
             </div>
-            <img src="{{ $candidate->photo }}" alt="{{ $candidate->name }}" class="candidate-photo">
+            @php
+                $photoPath = str_replace('../Assets', '/Assets', $candidate->photo);
+            @endphp
+            <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="candidate-photo" onerror="this.src='{{ asset('Assets/images/default-avatar.svg') }}'">
             
             <div class="candidate-info">
                 <div style="font-weight: 700; font-size: 1.125rem;">{{ $candidate->name }}</div>
@@ -114,123 +117,144 @@
 
 <!-- Modal Tambah Kandidat -->
 <div id="addCandidateModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 800px;">
         <span class="close-btn" onclick="document.getElementById('addCandidateModal').style.display='none'">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Tambah Kandidat Baru</h3>
         
         <form action="{{ route('admin.candidates.store') }}" method="POST" enctype="multipart/form-data" id="candidateForm">
             @csrf
             
-            <div class="form-group" style="background: #f9fafb; padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--border);">
-                <label>Pilih dari Data Pemilih (Opsional)</label>
-                
-                <!-- Custom Searchable Dropdown -->
-                <div class="custom-select-wrapper" style="position: relative; margin-top: 0.5rem;">
-                    <div class="custom-select-trigger" onclick="toggleDropdown()" style="padding: 0.75rem; background: white; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <span id="custom-select-text">-- Cari atau pilih siswa --</span>
-                        <i class="fa-solid fa-chevron-down"></i>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+                <!-- Kolom Kiri -->
+                <div>
+                    <div class="form-group" style="background: #f9fafb; padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--border);">
+                        <label>Pilih dari Data Pemilih (Opsional)</label>
+                        
+                        <!-- Custom Searchable Dropdown -->
+                        <div class="custom-select-wrapper" style="position: relative; margin-top: 0.5rem;">
+                            <div class="custom-select-trigger" onclick="toggleDropdown()" style="padding: 0.75rem; background: white; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                <span id="custom-select-text">-- Cari atau pilih siswa --</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            
+                            <div class="custom-options-container" id="custom-options" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: var(--radius); margin-top: 0.25rem; box-shadow: var(--shadow-lg); z-index: 100; max-height: 250px; overflow-y: auto;">
+                                <div style="padding: 0.5rem; position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border);">
+                                    <input type="text" id="voterSearchInput" onkeyup="filterVoters()" placeholder="Ketik nama siswa..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                                </div>
+                                
+                                <div class="custom-option" onclick="selectVoter('', '-- Cari atau pilih siswa --')" style="padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
+                                    <span>Reset Pilihan / Ketik Manual</span>
+                                </div>
+                                
+                                @foreach($voters as $voter)
+                                <div class="custom-option voter-option" data-name="{{ strtolower($voter->name) }}" onclick="selectVoter('{{ addslashes($voter->name) }}|{{ addslashes($voter->class_name) }}', '{{ addslashes($voter->name) }} ({{ addslashes($voter->class_name) }})', this)" style="padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s;">
+                                    <span>{{ $voter->name }} <small style="color: var(--text-muted);">({{ $voter->class_name }})</small></span>
+                                    <i class="fa-solid fa-check check-icon" style="color: var(--primary); display: none;"></i>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <!-- End Custom Searchable Dropdown -->
+                        
+                        <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Siswa yang sudah menjadi kandidat tidak akan muncul di daftar ini.</small>
                     </div>
                     
-                    <div class="custom-options-container" id="custom-options" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: var(--radius); margin-top: 0.25rem; box-shadow: var(--shadow-lg); z-index: 100; max-height: 250px; overflow-y: auto;">
-                        <div style="padding: 0.5rem; position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border);">
-                            <input type="text" id="voterSearchInput" onkeyup="filterVoters()" placeholder="Ketik nama siswa..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
-                        </div>
-                        
-                        <div class="custom-option" onclick="selectVoter('', '-- Cari atau pilih siswa --')" style="padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
-                            <span>Reset Pilihan / Ketik Manual</span>
-                        </div>
-                        
-                        @foreach($voters as $voter)
-                        <div class="custom-option voter-option" data-name="{{ strtolower($voter->name) }}" onclick="selectVoter('{{ addslashes($voter->name) }}|{{ addslashes($voter->class_name) }}', '{{ addslashes($voter->name) }} ({{ addslashes($voter->class_name) }})', this)" style="padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s;">
-                            <span>{{ $voter->name }} <small style="color: var(--text-muted);">({{ $voter->class_name }})</small></span>
-                            <i class="fa-solid fa-check check-icon" style="color: var(--primary); display: none;"></i>
-                        </div>
-                        @endforeach
+                    <div class="form-group">
+                        <label>Nama Calon</label>
+                        <input type="text" name="name" id="addName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <input type="text" name="class_name" id="addClassName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Organisasi (Opsional)</label>
+                        <input type="text" name="organization">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Foto Calon (Opsional)</label>
+                        <input type="file" name="photo" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
                     </div>
                 </div>
-                <!-- End Custom Searchable Dropdown -->
                 
-                <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Siswa yang sudah menjadi kandidat tidak akan muncul di daftar ini.</small>
+                <!-- Kolom Kanan -->
+                <div>
+                    <div class="form-group">
+                        <label>Visi</label>
+                        <input type="hidden" name="vision" id="visionInput">
+                        <div id="visionEditor"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Misi</label>
+                        <input type="hidden" name="mission" id="missionInput">
+                        <div id="missionEditor"></div>
+                    </div>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label>Nama Calon</label>
-                <input type="text" name="name" id="addName" required>
+            <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn" style="width: 100%;">Simpan Kandidat</button>
             </div>
-            
-            <div class="form-group">
-                <label>Kelas</label>
-                <input type="text" name="class_name" id="addClassName" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Organisasi (Opsional)</label>
-                <input type="text" name="organization">
-            </div>
-            
-            <div class="form-group">
-                <label>Foto Calon</label>
-                <input type="file" name="photo" accept="image/*" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
-            </div>
-            
-            <div class="form-group">
-                <label>Visi</label>
-                <input type="hidden" name="vision" id="visionInput">
-                <div id="visionEditor"></div>
-            </div>
-            
-            <div class="form-group">
-                <label>Misi</label>
-                <input type="hidden" name="mission" id="missionInput">
-                <div id="missionEditor"></div>
-            </div>
-            
-            <button type="submit" class="btn" style="width: 100%;">Simpan Kandidat</button>
         </form>
     </div>
 </div>
 
 <!-- Modal Edit Kandidat -->
 <div id="editCandidateModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 800px;">
         <span class="close-btn" onclick="document.getElementById('editCandidateModal').style.display='none'">&times;</span>
         <h3 style="margin-bottom: 1.5rem;">Edit Kandidat</h3>
         
         <form action="" method="POST" enctype="multipart/form-data" id="editCandidateForm">
             @csrf
-            <div class="form-group">
-                <label>Nama Calon</label>
-                <input type="text" name="name" id="editName" required>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+                <!-- Kolom Kiri -->
+                <div>
+                    <div class="form-group">
+                        <label>Nama Calon</label>
+                        <input type="text" name="name" id="editName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <input type="text" name="class_name" id="editClassName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Organisasi (Opsional)</label>
+                        <input type="text" name="organization" id="editOrganization">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Foto Calon (Biarkan kosong jika tidak diganti)</label>
+                        <input type="file" name="photo" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    </div>
+                </div>
+                
+                <!-- Kolom Kanan -->
+                <div>
+                    <div class="form-group">
+                        <label>Visi</label>
+                        <input type="hidden" name="vision" id="editVisionInput">
+                        <div id="editVisionEditor"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Misi</label>
+                        <input type="hidden" name="mission" id="editMissionInput">
+                        <div id="editMissionEditor"></div>
+                    </div>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label>Kelas</label>
-                <input type="text" name="class_name" id="editClassName" required>
+            <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn" style="width: 100%;">Update Kandidat</button>
             </div>
-            
-            <div class="form-group">
-                <label>Organisasi (Opsional)</label>
-                <input type="text" name="organization" id="editOrganization">
-            </div>
-            
-            <div class="form-group">
-                <label>Foto Calon (Biarkan kosong jika tidak diganti)</label>
-                <input type="file" name="photo" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
-            </div>
-            
-            <div class="form-group">
-                <label>Visi</label>
-                <input type="hidden" name="vision" id="editVisionInput">
-                <div id="editVisionEditor"></div>
-            </div>
-            
-            <div class="form-group">
-                <label>Misi</label>
-                <input type="hidden" name="mission" id="editMissionInput">
-                <div id="editMissionEditor"></div>
-            </div>
-            
-            <button type="submit" class="btn" style="width: 100%;">Update Kandidat</button>
         </form>
     </div>
 </div>
@@ -375,17 +399,5 @@
             document.getElementById('custom-options').style.display = 'none';
         }
     });
-    
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        var modal = document.getElementById('addCandidateModal');
-        var editModal = document.getElementById('editCandidateModal');
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-        if (event.target == editModal) {
-            editModal.style.display = "none";
-        }
-    }
 </script>
 @endsection

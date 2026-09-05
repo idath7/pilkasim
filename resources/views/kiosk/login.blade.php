@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kiosk Auth | e-Pilkasim</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
-    @if($faviconSetting && $faviconSetting->logo_osim)
-        <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/x-icon">
+    @if($faviconSetting && $faviconSetting->osim_logo)
+        <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/x-icon">
     @endif
     <link href="{{ asset('Assets/vendor/inter.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('Assets/vendor/font-awesome.min.css') }}">

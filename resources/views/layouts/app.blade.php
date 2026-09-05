@@ -6,8 +6,8 @@
     <title>e-Pilkasim | Pemilihan Cerdas</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
     @if($faviconSetting)
-        @if($faviconSetting->logo_osim)
-            <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/png">
+        @if($faviconSetting->osim_logo)
+            <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/png">
         @endif
         @if($faviconSetting->seo_title || $faviconSetting->seo_description)
             <meta name="description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">

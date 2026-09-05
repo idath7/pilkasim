@@ -4,8 +4,8 @@
   <base target="_top">
   <title>Cetak Kartu Pemilih - e-Pilkasim</title>
   @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
-  @if($faviconSetting && $faviconSetting->logo_osim)
-      <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/x-icon">
+  @if($faviconSetting && $faviconSetting->osim_logo)
+      <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/x-icon">
   @endif
   <style id="page-style">
     /* Default: Kertas Folio (F4) 215.9mm x 330.2mm */

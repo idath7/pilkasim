@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner | e-Pilkasim</title>
     @php $faviconSetting = \App\Models\Setting::getCached(); @endphp
-    @if($faviconSetting && $faviconSetting->logo_osim)
-        <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/png">
+    @if($faviconSetting && $faviconSetting->osim_logo)
+        <link rel="icon" href="{{ asset($faviconSetting->osim_logo) }}" type="image/png">
     @endif
     @if(isset($appSetting) && is_array($appSetting->dynamic_color_tags))
     <style>

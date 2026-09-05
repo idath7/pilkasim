@@ -249,14 +249,4 @@
     </div>
 </div>
 
-<script>
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('addModal')) {
-            document.getElementById('addModal').style.display = "none";
-        }
-        if (event.target == document.getElementById('importModal')) {
-            document.getElementById('importModal').style.display = "none";
-        }
-    }
-</script>
 @endsection
