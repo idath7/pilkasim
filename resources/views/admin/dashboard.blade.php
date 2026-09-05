@@ -76,18 +76,26 @@
     
     .progress-bar {
         width: 100%;
-        height: 8px;
+        height: 12px;
         background-color: var(--border);
-        border-radius: 4px;
+        border-radius: 6px;
         margin-top: 0.75rem;
         overflow: hidden;
+    }
+    
+    @keyframes progress-stripes {
+        from { background-position: 1rem 0; }
+        to { background-position: 0 0; }
     }
     
     .progress-fill {
         height: 100%;
         background-color: var(--primary);
-        border-radius: 4px;
-        transition: width 1s ease-in-out;
+        border-radius: 6px;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent);
+        background-size: 1rem 1rem;
+        animation: progress-stripes 1s linear infinite;
     }
 
     @media (max-width: 768px) {

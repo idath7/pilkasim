@@ -188,18 +188,26 @@
         
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 12px;
             background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
+            border-radius: 6px;
             margin-top: 0.5rem;
             overflow: hidden;
+        }
+        
+        @keyframes progress-stripes {
+            from { background-position: 1rem 0; }
+            to { background-position: 0 0; }
         }
         
         .progress-fill {
             height: 100%;
             background-color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }};
-            border-radius: 4px;
-            transition: width 1s ease-in-out;
+            border-radius: 6px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+            animation: progress-stripes 1s linear infinite;
         }
 
         /* Desktop Layout adjustments */
@@ -442,6 +450,13 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             fetchToken();
+            
+            // Trigger progress bar fill animation
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-width');
+                });
+            }, 300);
         });
     </script>
 </body>
