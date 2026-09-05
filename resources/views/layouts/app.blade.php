@@ -19,9 +19,9 @@
             <meta property="og:type" content="website">
         @endif
     @endif
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="{{ asset('assets/vendor/inter.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome.min.css') }}">
+    <script src="{{ asset('assets/vendor/sweetalert2.min.js') }}"></script>
     @if(isset($faviconSetting) && is_array($faviconSetting->dynamic_color_tags))
     <style>
         @foreach($faviconSetting->dynamic_color_tags as $tagData)

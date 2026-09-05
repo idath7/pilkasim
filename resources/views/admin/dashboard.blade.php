@@ -216,7 +216,7 @@
                 $photoPath = str_replace('../Assets', '/Assets', $candidate->photo);
                 $percentage = $votedCount > 0 ? round(($candidate->votes / $votedCount) * 100, 1) : 0;
             @endphp
-            <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="result-photo" onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($candidate->name) }}&background=4F46E5&color=fff'">
+            <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="result-photo" onerror="this.src='{{ asset('assets/images/default-avatar.svg') }}'">
             
             <div class="result-info">
                 <div class="result-name">{{ $candidate->name }}</div>
@@ -292,7 +292,7 @@
         <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Siswa dapat men-scan QR Code ini dari HP mereka untuk langsung membuka website pemilihan.</p>
         
         <div style="background: white; padding: 1rem; display: inline-block; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border);">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ urlencode(url('/')) }}" alt="QR Code" style="width: 250px; height: 250px; display: block;">
+            <div id="dashboard-qr" style="width: 250px; height: 250px; margin: 0 auto;"></div>
         </div>
         
         <div style="font-family: monospace; font-size: 1rem; font-weight: bold; word-break: break-all; background: #f3f4f6; padding: 0.75rem; border-radius: var(--radius);">
@@ -302,6 +302,7 @@
 </div>
 
 @section('scripts')
+<script src="{{ asset('assets/vendor/qrcode.min.js') }}"></script>
 <script>
     let currentLinkUrl = '';
     let tokenTimer;
@@ -349,6 +350,16 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         fetchCurrentToken();
+        
+        // Generate Local QR Code
+        new QRCode(document.getElementById("dashboard-qr"), {
+            text: "{{ url('/') }}",
+            width: 250,
+            height: 250,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
         
         // Animate progress bars
         setTimeout(() => {

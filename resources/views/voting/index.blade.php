@@ -81,7 +81,7 @@
                 // Fix legacy image path
                 $photoPath = str_replace('../Assets', '/Assets', $candidate->photo);
             @endphp
-            <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="candidate-photo" onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($candidate->name) }}&size=250&background=4F46E5&color=fff'">
+            <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="candidate-photo" onerror="this.src='{{ asset('assets/images/default-avatar.svg') }}'">
             
             <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column;">
                 <div class="candidate-info">

@@ -21,9 +21,9 @@
         @endforeach
     </style>
     @endif
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="{{ asset('assets/vendor/plus-jakarta-sans.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome.min.css') }}">
+    <script src="{{ asset('assets/vendor/qrcode.min.js') }}"></script>
     <style>
         body {
             @if(isset($appSetting) && $appSetting->use_gradient)
