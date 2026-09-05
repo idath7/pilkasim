@@ -125,17 +125,16 @@
         }
 
         #qrcode {
-            /* Kiosk QR code should be big */
-            min-width: 400px;
-            min-height: 400px;
+            min-width: 300px;
+            min-height: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
         
         #qrcode img, #qrcode canvas {
-            width: 400px;
-            height: 400px;
+            width: 300px;
+            height: 300px;
         }
 
         .timer-badge {
@@ -149,6 +148,58 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        /* Results CSS */
+        .result-card {
+            display: flex;
+            align-items: center;
+            padding: 0.25rem;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        
+        .result-photo {
+            width: 110px;
+            height: 110px;
+            border-radius: 0.75rem;
+            object-fit: cover;
+            object-position: top center;
+            background-color: #E5E7EB;
+        }
+        
+        .result-info {
+            flex: 1;
+            padding-right: 0.5rem;
+        }
+        
+        .result-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }};
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
         }
 
         /* Desktop Layout adjustments */
@@ -235,26 +286,61 @@
 
     <div class="container">
         
-        <!-- Top Section: Titles -->
-        <div class="header-section animate-up">
-            <h1 class="login-title">Scan Untuk Memilih</h1>
-            <h2 class="school-name">Pemilihan Ketua OSIM<br>{{ $appSetting->school_name ?? 'Nama Madrasah Belum Diatur' }}</h2>
-        </div>
-
-        <!-- Middle Section: Logo and QR -->
-        <div class="main-content-row animate-up" style="animation-delay: 0.2s">
-            
-            <!-- Left Side: Logo -->
-            <div class="logo-section">
+        <!-- Top Section: Logo and Titles -->
+        <div class="header-section animate-up" style="display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+            <!-- Logo -->
+            <div class="header-logo" style="width: 180px; flex-shrink: 0;">
                 @if(isset($appSetting) && $appSetting->osim_logo)
-                    <img src="{{ $appSetting->osim_logo }}" alt="Logo OSIM" style="max-width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                    <img src="{{ $appSetting->osim_logo }}" alt="Logo OSIM" style="width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
                 @else
-                    <div class="logo-placeholder">
-                        <i class="fa-solid fa-shield-halved"></i>
-                        <p><strong>Ruang Logo</strong><br><small>Logo OSIM belum diatur</small></p>
+                    <div class="logo-placeholder" style="width: 180px; height: 180px; border-radius: 1rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1);">
+                        <i class="fa-solid fa-shield-halved" style="font-size: 4rem; margin: 0; color: rgba(255,255,255,0.8);"></i>
                     </div>
                 @endif
-                <p class="instruction-text" style="font-size: 1.35rem; line-height: 1.6; opacity: 0.95; margin-top: 2rem; margin-bottom: 0; max-width: 90%;">Silakan buka halaman utama di HP Anda, klik <strong style="color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }}; font-weight: 800;">"Mulai Memilih"</strong>, lalu arahkan kamera ke QR Code ini.</p>
+            </div>
+            
+            <!-- Titles -->
+            <div class="header-text" style="text-align: left;">
+                <h1 class="login-title" style="margin-bottom: 0.5rem; margin-top: 0;">Scan Untuk Memilih</h1>
+                <h2 class="school-name" style="margin-top: 0;">Pemilihan Ketua OSIM<br>{{ $appSetting->school_name ?? 'Nama Madrasah Belum Diatur' }}</h2>
+            </div>
+        </div>
+
+        <!-- Middle Section: Instructions and QR -->
+        <div class="main-content-row animate-up" style="animation-delay: 0.2s">
+            
+            <!-- Left Side: Instructions and Results -->
+            <div class="instruction-section" style="flex: 1; max-width: 500px; display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 2rem;">
+                <!-- Live Results -->
+                <div style="width: 100%; display: flex; flex-direction: column; gap: 1rem;">
+                    @if(isset($candidates) && count($candidates) > 0)
+                        @php
+                            $totalCandidateVotes = $candidates->sum('votes');
+                        @endphp
+                        <h3 style="margin: 0; font-size: 1.1rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Perolehan Suara Sementara</h3>
+                        @foreach($candidates->sortByDesc('votes') as $candidate)
+                            <div class="result-card">
+                                @php
+                                    $photoPath = str_replace('../Assets', '/Assets', $candidate->photo);
+                                    $percentage = $totalCandidateVotes > 0 ? round(($candidate->votes / $totalCandidateVotes) * 100, 1) : 0;
+                                @endphp
+                                <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="result-photo" onerror="this.src='{{ asset('Assets/images/default-avatar.svg') }}'">
+                                
+                                <div class="result-info">
+                                    <div class="result-name">{{ $candidate->name }}</div>
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                        <span style="font-size: 1.25rem; font-weight: 800; color: white;">{{ $candidate->votes }} Suara</span>
+                                        <span style="font-weight: 700; color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }};">{{ $percentage }}%</span>
+                                    </div>
+                                    
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 0%;" data-width="{{ $percentage }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
             </div>
 
             <!-- Right Side: Content -->
@@ -265,6 +351,13 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- Bottom Section: Instructions -->
+        <div class="instruction-bottom animate-up" style="animation-delay: 0.4s; text-align: center; margin-top: 2rem; background: rgba(0,0,0,0.2); padding: 0.75rem 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <p class="instruction-text" style="font-size: 1.35rem; line-height: 1.6; opacity: 0.95; margin: 0;">
+                Silakan buka halaman utama di HP Anda, klik <strong style="color: {{ $appSetting->theme_color_3 ?? '#f59e0b' }}; font-weight: 800;">"Mulai Memilih"</strong>, lalu arahkan kamera ke QR Code ini.
+            </p>
         </div>
     </div>
 
@@ -288,8 +381,8 @@
             } else {
                 qrCodeObj = new QRCode(document.getElementById("qrcode"), {
                     text: url,
-                    width: 400,
-                    height: 400,
+                    width: 300,
+                    height: 300,
                     colorDark : "#1e293b",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H

@@ -34,7 +34,11 @@ Route::get('/kiosk', function () {
     if ($appSetting && $appSetting->kiosk_pin && !session()->has('kiosk_authenticated')) {
         return redirect()->route('kiosk.login');
     }
-    return view('kiosk.index', compact('appSetting'));
+    
+    $candidates = \App\Models\Candidate::all();
+    $votedCount = \App\Models\Voter::where('has_voted', true)->count();
+    
+    return view('kiosk.index', compact('appSetting', 'candidates', 'votedCount'));
 })->name('kiosk');
 
 Route::get('/scanner', function () {

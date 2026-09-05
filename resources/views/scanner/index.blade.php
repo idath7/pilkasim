@@ -226,9 +226,14 @@
         </div>
     </div>
 
-    <a href="{{ url('/') }}" class="btn-back">
-        <i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i> Kembali
-    </a>
+    <div style="display: flex; gap: 1rem; justify-content: center; width: 100%; max-width: 500px; margin-top: 1rem;">
+        <button onclick="window.location.reload()" class="btn-back" style="margin-top: 0; cursor: pointer; flex: 1; font-family: inherit; font-size: inherit;">
+            <i class="fa-solid fa-rotate-right" style="margin-right: 0.5rem;"></i> Refresh
+        </button>
+        <a href="{{ url('/') }}" class="btn-back" style="margin-top: 0; flex: 1;">
+            <i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i> Kembali
+        </a>
+    </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

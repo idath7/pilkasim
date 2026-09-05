@@ -210,11 +210,14 @@
 <h3 style="margin-bottom: 1rem;" class="animate-fade-in">Perolehan Suara Real-time</h3>
 
 <div class="results-grid animate-fade-in" style="animation-delay: 0.2s">
+    @php
+        $totalCandidateVotes = $candidates->sum('votes');
+    @endphp
     @foreach($candidates->sortByDesc('votes') as $candidate)
         <div class="card result-card">
             @php
                 $photoPath = str_replace('../Assets', '/Assets', $candidate->photo);
-                $percentage = $votedCount > 0 ? round(($candidate->votes / $votedCount) * 100, 1) : 0;
+                $percentage = $totalCandidateVotes > 0 ? round(($candidate->votes / $totalCandidateVotes) * 100, 1) : 0;
             @endphp
             <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="result-photo" onerror="this.src='{{ asset('Assets/images/default-avatar.svg') }}'">
             
