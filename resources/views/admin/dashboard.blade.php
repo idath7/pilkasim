@@ -388,17 +388,50 @@
         }, 1000);
     }
 
+    function fallbackCopy(text, successMsg) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            if (typeof Toast !== 'undefined') {
+                Toast.fire({ icon: 'success', title: successMsg });
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: successMsg, showConfirmButton: false, timer: 3000 });
+            }
+        } catch (err) {
+            console.error('Gagal copy', err);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function doCopy(text, successMsg) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                if (typeof Toast !== 'undefined') {
+                    Toast.fire({ icon: 'success', title: successMsg });
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: successMsg, showConfirmButton: false, timer: 3000 });
+                }
+            }).catch(() => fallbackCopy(text, successMsg));
+        } else {
+            fallbackCopy(text, successMsg);
+        }
+    }
+
     function copyLoginLink() {
         if (currentLinkUrl) {
-            navigator.clipboard.writeText(currentLinkUrl);
-            alert('Link login berhasil disalin!');
+            doCopy(currentLinkUrl, 'Tautan Berhasil Disalin!');
         }
     }
 
     function copyKioskLink() {
-        const kioskUrl = '{{ route("kiosk") }}';
-        navigator.clipboard.writeText(kioskUrl);
-        alert('URL Kiosk berhasil disalin: ' + kioskUrl);
+        doCopy('{{ route("kiosk") }}', 'Tautan Kiosk Disalin!');
     }
     
     function downloadQR() {
