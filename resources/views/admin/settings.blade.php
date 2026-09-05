@@ -253,7 +253,7 @@
                 <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Gambar ini akan muncul saat link dibagikan. Rekomendasi ukuran standar SEO: <strong>1200x630 piksel</strong> (Rasio 1.91:1) dan maksimal ukuran file 5MB.</p>
                 @if($setting->seo_image)
                     <div style="margin-top: 1rem;">
-                        <img src="{{ Storage::url($setting->seo_image) }}" alt="SEO Image" style="max-width: 300px; border-radius: 8px; border: 1px solid var(--border);">
+                        <img src="{{ asset($setting->seo_image) }}" alt="SEO Image" style="max-width: 300px; border-radius: 8px; border: 1px solid var(--border);">
                     </div>
                 @endif
             </div>

@@ -14,7 +14,7 @@
             <meta property="og:title" content="{{ $faviconSetting->seo_title ?? 'e-Pilkasim' }}">
             <meta property="og:description" content="{{ $faviconSetting->seo_description ?? 'Aplikasi Pemilihan' }}">
             @if($faviconSetting->seo_image)
-                <meta property="og:image" content="{{ url(Storage::url($faviconSetting->seo_image)) }}">
+                <meta property="og:image" content="{{ url($faviconSetting->seo_image) }}">
             @endif
             <meta property="og:type" content="website">
         @endif
