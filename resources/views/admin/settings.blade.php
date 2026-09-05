@@ -79,7 +79,7 @@
         letter-spacing: 1px;
     }
 </style>
-<link rel="stylesheet" href="{{ asset('assets/vendor/flatpickr.min.css') }}">
+<link rel="stylesheet" href="{{ asset('Assets/vendor/flatpickr.min.css') }}">
 @endsection
 
 @section('content')
@@ -308,7 +308,7 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('assets/vendor/flatpickr.min.js') }}"></script>
+<script src="{{ asset('Assets/vendor/flatpickr.min.js') }}"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 <script>
     let tagIndex = {{ is_array($setting->dynamic_color_tags) ? count($setting->dynamic_color_tags) : 0 }};

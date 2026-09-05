@@ -19,9 +19,9 @@
             <meta property="og:type" content="website">
         @endif
     @endif
-    <link href="{{ asset('assets/vendor/inter.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome.min.css') }}">
-    <script src="{{ asset('assets/vendor/sweetalert2.min.js') }}"></script>
+    <link href="{{ asset('Assets/vendor/inter.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('Assets/vendor/font-awesome.min.css') }}">
+    <script src="{{ asset('Assets/vendor/sweetalert2.min.js') }}"></script>
     @if(isset($faviconSetting) && is_array($faviconSetting->dynamic_color_tags))
     <style>
         @foreach($faviconSetting->dynamic_color_tags as $tagData)

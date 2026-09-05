@@ -8,8 +8,8 @@
     @if($faviconSetting && $faviconSetting->logo_osim)
         <link rel="icon" href="{{ Storage::url($faviconSetting->logo_osim) }}" type="image/x-icon">
     @endif
-    <link href="{{ asset('assets/vendor/inter.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome.min.css') }}">
+    <link href="{{ asset('Assets/vendor/inter.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('Assets/vendor/font-awesome.min.css') }}">
     <style>
         :root {
             --primary: {{ $appSetting->theme_color_1 ?? '#4F46E5' }};

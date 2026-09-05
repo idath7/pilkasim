@@ -21,10 +21,10 @@
         @endforeach
     </style>
     @endif
-    <link href="{{ asset('assets/vendor/plus-jakarta-sans.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome.min.css') }}">
+    <link href="{{ asset('Assets/vendor/plus-jakarta-sans.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('Assets/vendor/font-awesome.min.css') }}">
     <!-- Include html5-qrcode library -->
-    <script src="{{ asset('assets/vendor/html5-qrcode.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('Assets/vendor/html5-qrcode.min.js') }}" type="text/javascript"></script>
     <style>
         body {
             @if(isset($appSetting) && $appSetting->use_gradient)

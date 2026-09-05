@@ -216,7 +216,7 @@
                 $photoPath = str_replace('../Assets', '/Assets', $candidate->photo);
                 $percentage = $votedCount > 0 ? round(($candidate->votes / $votedCount) * 100, 1) : 0;
             @endphp
-            <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="result-photo" onerror="this.src='{{ asset('assets/images/default-avatar.svg') }}'">
+            <img src="{{ $photoPath }}" alt="{{ $candidate->name }}" class="result-photo" onerror="this.src='{{ asset('Assets/images/default-avatar.svg') }}'">
             
             <div class="result-info">
                 <div class="result-name">{{ $candidate->name }}</div>
@@ -302,7 +302,7 @@
 </div>
 
 @section('scripts')
-<script src="{{ asset('assets/vendor/qrcode.min.js') }}"></script>
+<script src="{{ asset('Assets/vendor/qrcode.min.js') }}"></script>
 <script>
     let currentLinkUrl = '';
     let tokenTimer;

@@ -19,8 +19,8 @@
             <meta property="og:type" content="website">
         @endif
     @endif
-    <link href="{{ asset('assets/vendor/plus-jakarta-sans.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome.min.css') }}">
+    <link href="{{ asset('Assets/vendor/plus-jakarta-sans.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('Assets/vendor/font-awesome.min.css') }}">
     <style>
         body {
             @if(isset($appSetting) && $appSetting->use_gradient)
@@ -243,7 +243,7 @@
     </div>
 
     <!-- SweetAlert2 -->
-    <script src="{{ asset('assets/vendor/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('Assets/vendor/sweetalert2.min.js') }}"></script>
     <script>
         const Toast = Swal.mixin({
             toast: true,

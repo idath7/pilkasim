@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('styles')
-<link href="{{ asset('assets/vendor/quill.snow.css') }}" rel="stylesheet">
+<link href="{{ asset('Assets/vendor/quill.snow.css') }}" rel="stylesheet">
 <style>
     .header-flex {
         display: flex;
@@ -237,7 +237,7 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('assets/vendor/quill.js') }}"></script>
+<script src="{{ asset('Assets/vendor/quill.js') }}"></script>
 <script>
     var toolbarOptions = [
         ['bold', 'italic', 'underline'],
